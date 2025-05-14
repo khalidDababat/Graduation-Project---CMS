@@ -1,0 +1,127 @@
+
+
+
+
+  .home_container {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow-x: hidden;
+    direction: ltr;
+  }
+  
+  .home_header {
+    width: 100%;
+    background-color: #577E73;
+    min-height: 100px;
+    box-shadow: 0px 7px 16px -1px #60946e;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    position: relative;
+  } 
+
+  .home_header button{
+    width: 150px;
+    height: 40px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 17px;
+    font-weight: bold;
+    border: none;
+    outline: none;
+    padding: 10px;
+    position: relative;
+    top: 30px;
+    left: 30px;
+  }
+
+  
+  .loginBtn{
+   text-decoration: none; 
+   color: black;
+  }
+  /* .home-header button {
+    width: 150px;
+    height: 40px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 17px;
+    font-weight: bold;
+    border: none;
+    outline: none;
+    padding: 10px;
+    position: relative;
+    top: 30px;
+    left: 30px;
+  } */
+  
+  .home_header button:hover {
+    background-color: #52656E;
+    transition: 0.7s;
+  }
+  
+  .action {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    padding: 10px;
+  }
+  
+  .action a {
+    text-decoration: none;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 10px;
+  }
+  
+  .action a:hover {
+    background-color: #52656E;
+    border-radius: 50px; 
+    border-bottom: 2px solid black;
+    transition: 0.7s;
+  }
+  
+  .header_logo {
+    padding: 10px;
+    position: absolute;
+    right: 80px;
+    top: 20px;
+    color: white;
+  }
+  
+
+
+  .home_content {
+    flex: 1;
+   
+    background-image: url("../../Assets/homePage\ .jpg");
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow:  0px 11px 25px rgb(166,209,159)
+  }
+  
+  .home_content h1 {
+    color: white;
+    text-align: center; 
+   
+  }
+  
+  /* footer {
+    background-color: #202020;
+    height: 50px;
+    color: white;
+    padding: 10px;
+    font-size: 20px;
+    text-align: center;
+  } */
+
+
+
+ 
