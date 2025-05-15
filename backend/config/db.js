@@ -1,4 +1,4 @@
-var mysql = require('mysql');
+var mysql = require('mysql2');
 
 // require('dotenv').config();
 
@@ -16,6 +16,6 @@ con.connect(function(err) {
   console.log("Connected!");
 });
 
-// 
-// module.exports = db;
+
+module.exports = con;
 
