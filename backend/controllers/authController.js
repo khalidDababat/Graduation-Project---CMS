@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const {
   findAdminByUsername,
-  findEmployeeByNationalId,
+  findEmployeeByIDNumber,
 } = require('../models/authModel');
 
 const login = (req, res) => {
@@ -14,12 +14,18 @@ const login = (req, res) => {
     if (!username || !password)
       return res.status(400).json({ message: 'Username and password are required for admin.' });
 
+    
     findAdminByUsername(username, (err, results) => {
       if (err) return res.status(500).json({ message: 'Database error', error: err });
       if (results.length === 0)
         return res.status(401).json({ message: 'Invalid admin credentials.' });
 
       const admin = results[0];
+
+  // if (admin.password !== password) {
+  // return res.status(401).json({ message: 'Invalid admin credentials testing' });
+  // }
+
       bcrypt.compare(password, admin.password, (err, isMatch) => {
         if (err) return res.status(500).json({ message: 'Error comparing passwords' });
         if (!isMatch)
@@ -31,15 +37,21 @@ const login = (req, res) => {
           id: admin.id,
           username: admin.username,
         });
+         res.status(200).json({
+          message: 'Admin login successful',
+          role: 'admin',
+          id: admin.id,
+          username: admin.username,
+        });
       });
     });
 
   } else if (role === 'employee') {
-    const { national_id, password } = req.body;
-    if (!national_id || !password)
+    const { ID_Number, password } = req.body;
+    if (!ID_Number || !password)
       return res.status(400).json({ message: 'National ID and password are required for employee.' });
 
-    findEmployeeByNationalId(national_id, (err, results) => {
+    findEmployeeByIDNumber(ID_Number, (err, results) => {
       if (err) return res.status(500).json({ message: 'Database error', error: err });
 
       if (results.length === 0)
