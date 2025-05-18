@@ -9,7 +9,6 @@ const createComplaint = (data, callback) => {
   const values = [
     data.user_id,
     data.title,
-    data.subject,
     data.description,
     data.department_id,
     data.now(),
