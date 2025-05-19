@@ -7,7 +7,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 const AdminLogin = (e) => {
-    
   const navigate = useNavigate();
 
   const [userType, setUserType] = useState("");
@@ -17,59 +16,59 @@ const AdminLogin = (e) => {
 
   const [employeeID, setEmployeeID] = useState("");
   const [employeePassword, setEmployeePassword] = useState("");
-   
-  const handelLogin = async ()=>{
-    e.preventDefault();
-    if(userType === "admin"){
-      const res = await fetch("api/loginAdmin", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          userName,
-          password,
-          role: userType
-        })
-      });
-     
+
+  const handelLogin = async () => {
+
+          alert("Login");   
+
+        //  if(userType === "admin"){
+        //   console.log("Admin Login",userType);
+        //   navigate("/AdminDashboard");
+           
+        // }
+
+    //       const res = await fetch("http://localhost:5000/api/login", {
+    //         method: "POST",
+    //         headers: {
+    //           "Content-Type": "application/json"
+    //         },
+    //         body: JSON.stringify({
+    //           userName,
+    //           password,
+    //           role: userType
+    //         })
+    //       });
+    //     const data = await res.json();
+    //     console.log("The Data ",data);
+    //     if(data.status === 200){
+    //       navigate("/AdminDashboard");
+    //   } else{
+    //     alert("Invalid credentials");
+    //   }
+    // }else if(userType === "employee"){
+    //   const res = await fetch("http://localhost:5000/api/employeeLogin",{
+    //       method:"POST",
+    //       headers:{
+    //         "Content-Type":"application/json"
+    //       },
+    //       body:JSON.stringify({
+    //         employeeID,
+    //         employeePassword,
+    //       })
+    //     });
+    //     const data = await res.json();
+    //     if(res.status === 200){
+    //       navigate("/EmployeeDashboard");
+    //   } else{
+    //     alert("Invalid credentials");
+    //   }
+    // }
+  };
 
 
-      
-    const data = await res.json(); 
-    console.log(data);
-    if(res.status === 200){
-      navigate("/AdminDashboard");
-  } else{
-    alert("Invalid credentials");
-  } 
-  }
-// }else if(userType === "employee"){
-//   const res = await fetch("http://localhost:5000/api/employeeLogin",{
-//       method:"POST",
-//       headers:{
-//         "Content-Type":"application/json"
-//       }, 
-//       body:JSON.stringify({
-       
-//         employeeID,
-//         employeePassword,
-        
-//       })
-//     });
-//     const data = await res.json(); 
-//     if(res.status === 200){
-//       navigate("/EmployeeDashboard");
-//   } else{
-//     alert("Invalid credentials");
-//   } 
-  
-
-// } 
-   }     
 
 
-   
+
   return (
     <Fragment>
       <div className="conteaner">
@@ -80,7 +79,7 @@ const AdminLogin = (e) => {
         <div className={styles.conteaner}>
           <h2 className={styles.heading_Conteaner}>Log In </h2>
           <div className="Login-App">
-            <form action="" method="post" onSubmit={handelLogin}>
+            <form method="post" onSubmit={handelLogin}>
               <div className="selected">
                 <select
                   value={userType}
@@ -116,7 +115,7 @@ const AdminLogin = (e) => {
                       type="password"
                       name="pass"
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)} 
+                      onChange={(e) => setPassword(e.target.value)}
                       required
                     />
                   </div>
@@ -128,7 +127,7 @@ const AdminLogin = (e) => {
                     </span>
                   </div>
                 </>
-              )} 
+              )}
               {userType === "" && (
                 <>
                   <div className={styles.username}>
