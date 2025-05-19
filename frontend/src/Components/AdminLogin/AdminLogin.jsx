@@ -6,45 +6,48 @@ import AdminDashboard from "../../Components/AdminDashboard/AdminDashboard.jsx";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
-const AdminLogin = (e) => {
+const AdminLogin = () => {
   const navigate = useNavigate();
 
-  const [userType, setUserType] = useState("");
+  const [userType, setUserType] = useState("admin");
 
-  const [userName, setUsername] = useState("");
+  const [username, setusername] = useState("");
   const [password, setPassword] = useState("");
 
   const [employeeID, setEmployeeID] = useState("");
   const [employeePassword, setEmployeePassword] = useState("");
 
-  const handelLogin = async () => {
+  const handelLogin = async (e) => {
+      e.preventDefault();
+    if (userType === "admin") {
 
-          alert("Login");   
+      const res = await fetch("http://localhost:5000/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username:username.trim(),
+          password: password.trim(),
+          role    : userType, 
 
-        //  if(userType === "admin"){
-        //   console.log("Admin Login",userType);
-        //   navigate("/AdminDashboard");
-           
-        // }
-
-    //       const res = await fetch("http://localhost:5000/api/login", {
-    //         method: "POST",
-    //         headers: {
-    //           "Content-Type": "application/json"
-    //         },
-    //         body: JSON.stringify({
-    //           userName,
-    //           password,
-    //           role: userType
-    //         })
-    //       });
-    //     const data = await res.json();
-    //     console.log("The Data ",data);
-    //     if(data.status === 200){
-    //       navigate("/AdminDashboard");
-    //   } else{
-    //     alert("Invalid credentials");
-    //   }
+          
+        }),
+       
+      
+      }); 
+      
+     
+      const data = await res.json();
+      // console.log("The Data ",res.status);
+      if (res.status === 200) {
+        navigate("/AdminDashboard");
+      } else {
+        alert("Invalid credentials");
+      }
+   
+    }
+    
     // }else if(userType === "employee"){
     //   const res = await fetch("http://localhost:5000/api/employeeLogin",{
     //       method:"POST",
@@ -64,10 +67,6 @@ const AdminLogin = (e) => {
     //   }
     // }
   };
-
-
-
-
 
   return (
     <Fragment>
@@ -101,15 +100,15 @@ const AdminLogin = (e) => {
                       id="user"
                       type="text"
                       name="user-name"
-                      value={userName}
-                      onChange={(e) => setUsername(e.target.value)}
+                      value={username}
+                      onChange={(e) => setusername(e.target.value)}
                       required
                     />
                   </div>
 
                   <div className={styles.password}>
-                    <label htmlFor="pass">Password</label>
-                    <input
+                    <label  htmlFor="pass">Password</label>
+                    <input 
                       className={styles.input_field}
                       id="pass"
                       type="password"
