@@ -1,13 +1,15 @@
-const db = require('../config/db');
+const db = require('../config/db'); // ملف الاتصال بقاعدة البيانات
 
-const findAdminByUsername = (username, callback) => {
+const findAdminByUsername = async (username) => {
   const query = 'SELECT * FROM admins WHERE username = ?';
-  db.query(query, [username], callback);
+  const [results] = await db.query(query, [username]);
+  return results;
 };
 
-const findEmployeeByIDNumber = (IDNumber, callback) => {
+const findEmployeeByIDNumber = async (ID_Number) => {
   const query = 'SELECT * FROM employees WHERE ID_Number = ?';
-  db.query(query, [IDNumber], callback);
+  const [results] = await db.query(query, [ID_Number]);
+  return results;
 };
 
 module.exports = {
