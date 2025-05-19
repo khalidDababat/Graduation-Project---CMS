@@ -17,5 +17,5 @@ con.connect(function(err) {
 });
 
 
-module.exports = con;
+module.exports = con.promise();
 

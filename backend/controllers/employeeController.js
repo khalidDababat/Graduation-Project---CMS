@@ -1,41 +1,64 @@
-const bcrypt = require('bcrypt');
-const Employee = require('../models/employeeModel');
+const employeeModel = require('../models/employeeModel');
+const { hashPassword } = require('../services/hashService');
 
-// added employee
-exports.addEmployee = async (req, res) => {
-    try {
-        const { FullName, phone, ID_Number, password, email, admin_ID, department_id } = req.body;
-        const hashedPassword = await bcrypt.hash(password, 10);
 
-        Employee.createEmployee({ FullName, phone, ID_Number, password: hashedPassword, email, admin_ID, department_id }, (err, result) => {
-            if (err) return res.status(500).json({ error: 'Database error' });
-            res.status(201).json({ message: 'Employee added successfully' });
-        });
-    } catch (err) {
-        res.status(500).json({ error: 'Server error' });
-    }
-};
+async function addEmployee(req, res) {
+  try {
+    const { fullName, phone, idNumber, password, email, admin_ID, department_id } = req.body;
 
-// view employee
-exports.getEmployees = (req, res) => {
-    Employee.getAllEmployees((err, rows) => {
-        if (err) return res.status(500).json({ error: 'Database error' });
-        res.json(rows);
-    });
-};
+    if (!password) 
+        return res.status(400).json({ message: 'Password is required' });
 
-// update employees
-exports.updateEmployee = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { FullName, phone, ID_Number, password, email, department_id } = req.body;
-        const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await hashPassword(password);
+    const employee = { fullName, phone, idNumber, password: hashedPassword, email, admin_ID, department_id };
 
-        Employee.updateEmployee(id, { FullName, phone, ID_Number, password: hashedPassword, email, department_id }, (err, result) => {
-            if (err) return res.status(500).json({ error: 'Database error' });
-            res.json({ message: 'Employee updated successfully' });
-        });
-    } catch (err) {
-        res.status(500).json({ error: 'Server error' });
-    }
+    await employeeModel.addEmployee(employee);
+    res.status(201).json({ message: 'Employee added successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+}
+
+async function getEmployees(req, res) {
+  try {
+    const employees = await employeeModel.getAllEmployees();
+    res.json(employees);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+}
+
+async function updateEmployee(req, res) {
+  try {
+    const id = req.params.id;
+    const { fullName, phone, idNumber,password, email, department_id } = req.body;
+    
+   
+    await employeeModel.updateEmployee(id, { fullName, phone, idNumber,password, email, department_id });
+    res.json({ message: 'Employee updated successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+}
+
+
+async function deleteEmployee(req, res) {
+  try {
+    const id = req.params.id;
+    await employeeModel.deleteEmployee(id);
+    res.json({ message: 'Employee deleted successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+}
+
+module.exports = {
+  addEmployee,
+  getEmployees,
+  updateEmployee,
+  deleteEmployee
 };

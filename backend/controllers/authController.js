@@ -22,7 +22,7 @@ const login = (req, res) => {
 
       const admin = results[0];
 
-
+        // const hashedPassword = await hashPassword(password);
       bcrypt.compare(password, admin.password, (err, isMatch) => {
         if (err) return res.status(500).json({ message: 'Error comparing passwords' });
         if (!isMatch)
@@ -56,11 +56,11 @@ const login = (req, res) => {
           return res.status(401).json({ message: 'Invalid employee credentials.' });
 
         res.status(200).json({
-          message: 'Employee login successful',
-          role: 'employee',
-          id: employee.id,
-          name: employee.name,
-          department_id: employee.department_id,
+        message: 'Employee login successful',
+        role: 'employee',
+        id: employee.id,
+        name: employee.name,
+        department_id: employee.department_id,
         });
       });
     });
