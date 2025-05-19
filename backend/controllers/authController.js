@@ -22,22 +22,13 @@ const login = (req, res) => {
 
       const admin = results[0];
 
-  // if (admin.password !== password) {
-  // return res.status(401).json({ message: 'Invalid admin credentials testing' });
-  // }
 
       bcrypt.compare(password, admin.password, (err, isMatch) => {
         if (err) return res.status(500).json({ message: 'Error comparing passwords' });
         if (!isMatch)
           return res.status(401).json({ message: 'Invalid admin credentials.' });
 
-        res.status(200).json({
-          message: 'Admin login successful',
-          role: 'admin',
-          id: admin.id,
-          username: admin.username,
-        });
-         res.status(200).json({
+          res.status(200).json({
           message: 'Admin login successful',
           role: 'admin',
           id: admin.id,
