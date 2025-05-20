@@ -1,8 +1,16 @@
 const bcrypt = require('bcrypt');
+const { v4: uuidv4 } = require('uuid');
+const nodemailer = require('nodemailer');
 const {
   findAdminByUsername,
   findEmployeeByIDNumber,
+  findUserByEmail,
+  storeLoginToken,
+  verifyLoginToken,
+  deleteLoginToken,
 } = require('../models/authModel');
+const { sendEmail } = require('../services/mailService');
+
 
 const login = async (req, res) => {
   const { role } = req.body;
@@ -63,6 +71,64 @@ const login = async (req, res) => {
   }
 };
 
+const requestLogin = async (req, res) => {
+  try {
+    const { email, role } = req.body;
+    if (!email || !role)
+      return res.status(400).json({ message: 'Email and role are required.' });
+
+    const results = await findUserByEmail(email, role);
+    if (results.length === 0)
+      return res.status(404).json({ message: 'User not found.' });
+
+    const token = uuidv4();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);// 10 min
+
+    await storeLoginToken(email, role, token, expiresAt);
+
+    const magicLink = `http://localhost:3000/magic-login?token=${token}`;
+
+    const mailOptions = {
+      from: process.env.MAIL_USER,
+      to: email,
+      subject: 'Forget Login Link',
+      html: `<p>Click below to login:</p><a href="${magicLink}">${magicLink}</a>`,
+    };
+
+    await sendEmail(email, 'Forget Login Link', `<p>Click below to login:</p><a href="${magicLink}">${magicLink}</a>`);
+
+
+    return res.status(200).json({ message: 'Login link sent to your email.' });
+  } catch (err) {
+    console.error('Error in requestLogin:', err);
+    return res.status(500).json({ message: 'Internal Server Error', error: err.message });
+  }
+};
+
+const verifyToken = async (req, res) => {
+  try {
+    const { token } = req.body;
+    if (!token) return res.status(400).json({ message: 'Token is required.' });
+
+    const results = await verifyLoginToken(token);
+    if (results.length === 0) {
+      return res.status(400).json({ message: 'Invalid or expired token.' });
+    }
+
+    const user = results[0];
+
+    await deleteLoginToken(token);
+
+    res.status(200).json({ message: 'Login successful', email: user.email, role: user.role });
+  } catch (err) {
+    console.error('Error in verifyToken:', err);
+    return res.status(500).json({ message: 'Internal Server Error', error: err.message });
+  }
+};
+
+
 module.exports = {
   login,
+  requestLogin,
+  verifyToken,
 };

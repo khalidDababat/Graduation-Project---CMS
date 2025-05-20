@@ -1,9 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const db = require('./config/db');
-const complaintRoutes = require('./routes/complaintRoutes'); // XX
+const complaintRoutes = require('./routes/complaintRoutes'); 
 const authRoutes = require('./routes/authRoutes');
-const adminResetRoutes = require('./routes/adminResetRoutes');//XX
 const employeeRoutes = require('./routes/employeeRoutes');
 require('dotenv').config();
 
@@ -15,7 +14,6 @@ app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
 app.use('/api', complaintRoutes);
-app.use('/api', adminResetRoutes);
 app.use('/api', authRoutes);
 app.use('/api/employees', employeeRoutes);
 

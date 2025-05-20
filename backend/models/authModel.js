@@ -1,4 +1,4 @@
-const db = require('../config/db'); // ملف الاتصال بقاعدة البيانات
+const db = require('../config/db'); 
 
 const findAdminByUsername = async (username) => {
   const query = 'SELECT * FROM admins WHERE username = ?';
@@ -12,7 +12,35 @@ const findEmployeeByIDNumber = async (ID_Number) => {
   return results;
 };
 
+const findUserByEmail = async (email, role) => {
+
+
+      const table = role === 'admin' ? 'admins' : 'employees';
+      const query = `SELECT * FROM ${table} WHERE email = ?`;
+      const [results] = await db.query(query, [email]);
+      return results;
+};
+const storeLoginToken =  async (email, role, token, expiresAt) => {
+  const query = 'INSERT INTO  login_tokens (email, role, token, expires_at) VALUES (?, ?, ?, ?)';
+  await db.query(query, [email, role, token, expiresAt]);
+};
+
+const verifyLoginToken = async (token) => {
+  const query = 'SELECT * FROM login_tokens WHERE token = ? AND expires_at > NOW()';
+  const [results] = await db.query(query, [token]);
+  return results;
+};
+const deleteLoginToken = async (token) => {
+  const query = 'DELETE FROM login_tokens WHERE token = ?';
+  await db.query(query, [token]);
+};
+
 module.exports = {
   findAdminByUsername,
   findEmployeeByIDNumber,
+  findUserByEmail,
+  storeLoginToken,
+  verifyLoginToken,
+  deleteLoginToken,
+
 };

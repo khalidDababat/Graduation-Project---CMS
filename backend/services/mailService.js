@@ -1,3 +1,4 @@
+require('dotenv').config();
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
@@ -5,20 +6,21 @@ const transporter = nodemailer.createTransport({
   auth: {
     user: process.env.MAIL_USER,
     pass: process.env.MAIL_PASS
+  },
+  tls: {
+    rejectUnauthorized: false, 
   }
 });
 
-const sendResetEmail = (to, code, callback) => {
+function sendEmail(to, subject, text) {
   const mailOptions = {
     from: process.env.MAIL_USER,
     to,
-    subject: 'Admin Password Reset Code',
-    text: `Your reset code is: ${code}`
+    subject,
+    text,
   };
 
-  transporter.sendMail(mailOptions, callback);
-};
+  return transporter.sendMail(mailOptions);
+}
 
-module.exports = {
-  sendResetEmail
-};
+module.exports = { sendEmail };
