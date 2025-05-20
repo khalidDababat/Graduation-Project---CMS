@@ -2,6 +2,7 @@ import React, { Fragment } from "react";
 import styles from "./AdminLogin.module.css";
 import logo from "../../Assets/Logo-Image.jpg";
 import AdminDashboard from "../../Components/AdminDashboard/AdminDashboard.jsx";
+import EmployeePage from "../EmployeePage/EmployeePage.jsx"; 
 
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -33,10 +34,12 @@ const AdminLogin = () => {
 
           
         }),
-       
+             
+         
       
       }); 
-      
+         
+
      
       const data = await res.json();
       // console.log("The Data ",res.status);
@@ -46,26 +49,26 @@ const AdminLogin = () => {
         alert("Invalid credentials");
       }
    
-    }
     
-    // }else if(userType === "employee"){
-    //   const res = await fetch("http://localhost:5000/api/employeeLogin",{
-    //       method:"POST",
-    //       headers:{
-    //         "Content-Type":"application/json"
-    //       },
-    //       body:JSON.stringify({
-    //         employeeID,
-    //         employeePassword,
-    //       })
-    //     });
-    //     const data = await res.json();
-    //     if(res.status === 200){
-    //       navigate("/EmployeeDashboard");
-    //   } else{
-    //     alert("Invalid credentials");
-    //   }
-    // }
+    
+    }else if(userType === "employee"){
+      const res = await fetch("http://localhost:5000/api/login",{
+          method:"POST",
+          headers:{
+            "Content-Type":"application/json"
+          },
+          body:JSON.stringify({
+            employeeID,
+            employeePassword,
+          })
+        });
+        const data = await res.json();
+        if(res.status === 200){
+          navigate("/EmployeePage");
+      } else{
+        alert("Invalid credentials");
+      }
+    }
   };
 
   return (
@@ -171,7 +174,7 @@ const AdminLogin = () => {
                       required
                     />
                   </div>
-
+                 
                   <div className={styles.password}>
                     <label htmlFor="pass">كلمة المرور</label>
                     <input

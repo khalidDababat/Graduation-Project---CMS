@@ -27,6 +27,7 @@ function App() {
             <Route path="/Complaint_Track" element ={<ComplaintTrack/>}/>
             <Route path="/AdminDashboard" element ={<AdminDashboard/>}/>
             <Route path="/ComplaintsManagement" element ={<ComplaintsManagement/>}/>
+            <Route path="/EmployeePage" element={<EmployeePage/>}/>
          </Routes>
        </Router>
            
