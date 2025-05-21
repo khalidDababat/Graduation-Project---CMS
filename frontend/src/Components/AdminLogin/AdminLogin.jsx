@@ -11,12 +11,14 @@ const AdminLogin = () => {
   const navigate = useNavigate();
 
   const [userType, setUserType] = useState("admin");
+  
+  const [messageFeild ,setmessageFeild] =useState(""); 
 
   const [username, setusername] = useState("");
   const [password, setPassword] = useState("");
 
-  const [employeeID, setEmployeeID] = useState("");
-  const [employeePassword, setEmployeePassword] = useState("");
+  const [ID_Number, setID_Number] = useState("");
+  const [passwordEmployee, setPasswordEmployee] = useState("");
 
   const handelLogin = async (e) => {
       e.preventDefault();
@@ -46,7 +48,11 @@ const AdminLogin = () => {
       if (res.status === 200) {
         navigate("/AdminDashboard");
       } else {
-        alert("Invalid credentials");
+        // alert("Invalid credentials");
+        setmessageFeild(" Username Or Password is Wrong!")
+        setTimeout(() => {
+           setmessageFeild("");
+        }, 7000);
       }
    
     
@@ -58,15 +64,22 @@ const AdminLogin = () => {
             "Content-Type":"application/json"
           },
           body:JSON.stringify({
-            employeeID,
-            employeePassword,
+            ID_Number: ID_Number.trim(),
+            password: passwordEmployee.trim(),
+            role    : userType, 
           })
         });
         const data = await res.json();
+       // console.log("for testing ",employeeID.trim() ," ",employeePassword.trim()); 
+        console.log("the Data is:",data);
         if(res.status === 200){
           navigate("/EmployeePage");
       } else{
-        alert("Invalid credentials");
+        // alert("Invalid credentials"); 
+        setmessageFeild(" Username Or Password is Wrong!")
+        setTimeout(() => {
+           setmessageFeild("");
+        }, 7000);
       }
     }
   };
@@ -81,6 +94,12 @@ const AdminLogin = () => {
         <div className={styles.conteaner}>
           <h2 className={styles.heading_Conteaner}>Log In </h2>
           <div className="Login-App">
+           {messageFeild && (
+            <div className="alert alert-danger text-center" role="alert">
+                {messageFeild}
+            </div>
+           )}
+
             <form method="post" onSubmit={handelLogin}>
               <div className="selected">
                 <select
@@ -170,7 +189,9 @@ const AdminLogin = () => {
                       className={styles.input_field}
                       id="user"
                       type="text"
-                      name="ُEmployeeID"
+                      name="ُID_Number" 
+                      value={ID_Number} 
+                      onChange={(e)=> setID_Number(e.target.value)}
                       required
                     />
                   </div>
@@ -181,18 +202,21 @@ const AdminLogin = () => {
                       className={styles.input_field}
                       id="pass"
                       type="password"
-                      name="pass"
+                      name="passwordEmployee"
+                      value={passwordEmployee}
+                      onChange={(e)=>setPasswordEmployee(e.target.value)}
                       required
                     />
                   </div>
+    
 
+                  {/* /ForgetPasswordEmployee */}
                   <div className={styles.forget_password}>
-                    <span>
-                      نسيت كلمة المرور
-                      <Link to="/ForgetPasswordEmployee">
-                        تواصل مع مسؤول النظام
-                      </Link>
+                  <span>
+                      Forgot you password?{" "}
+                      <Link to="/ForgetPasswordEmployee"> Click here</Link>
                     </span>
+                    
                   </div>
                 </Fragment>
               )}
@@ -206,6 +230,16 @@ const AdminLogin = () => {
           </div>
         </div>
       </div>
+
+       
+       <footer>
+         <div className={styles.copyright_area}>
+          <p>جميع الحقوق محفوظة ©2025. نظام إدارة الشكاوي لبلدية عنبتا</p>
+        </div>
+
+       </footer>
+
+
     </Fragment>
   );
 };

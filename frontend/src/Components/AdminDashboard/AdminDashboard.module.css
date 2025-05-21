@@ -170,7 +170,16 @@ body{
     margin-right: 100px;
   }
    
-
+.notify_complaint{
+  margin-right: 38px; 
+  background-color: red;
+  border-radius: 50%;
+  padding: 2px;
+  color: white;
+  width: 2px;
+  font-size: 16px;
+  
+} 
 
 
   

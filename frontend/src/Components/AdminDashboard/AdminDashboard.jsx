@@ -4,6 +4,7 @@ import logo_image from "../../Assets/Logo_image.jpg";
 import { FaBars, FaUser, FaBell } from "react-icons/fa";
 import { Link } from "react-router-dom"; 
 
+
 // import FooterPart from "../../Components/FooterPart/FooterPart.jsx"; 
 
 const AdminDashboard = () => {
@@ -49,17 +50,17 @@ const AdminDashboard = () => {
 
                 <form action="">
                 <ul>
-                <li>
+                {/* <li>
                   <Link to='/AdminDashboard'>الصفحة الرئيسية</Link>
-                </li>
+                </li> */}
                 <li>
-                  <Link >إدارة الموظفين</Link>
+                  <Link to='/EmployeeMangment' >إدارة الموظفين</Link>
                 </li>
                 <li>
                   <Link to="/ComplaintsManagement">إدارة الشكاوي</Link>
                 </li>
                 <li>
-                  <Link > الملف الشخصي</Link>
+                  <Link >تغير كلمة السر </Link>
                 </li>
                 <li>
                   <Link >تسجيل الخروج</Link>
@@ -129,6 +130,9 @@ const AdminDashboard = () => {
 
 
       </div>
+         
+
+
          
          <footer>
 

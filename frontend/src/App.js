@@ -10,6 +10,7 @@ import ComplaintTrack from "./pages/ComplaintTrack.jsx";
 import AdminDashboard from "./Components/AdminDashboard/AdminDashboard.jsx"; 
 import EmployeePage from "./Components/EmployeePage/EmployeePage.jsx";
 import ComplaintsManagement from "./Components/AdminDashboard/ComplaintsManagement.jsx";
+import EmployeeMangment from './Components/AdminDashboard/EmployeeMangment.jsx'
 
 import "./App.css"; 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -28,6 +29,8 @@ function App() {
             <Route path="/AdminDashboard" element ={<AdminDashboard/>}/>
             <Route path="/ComplaintsManagement" element ={<ComplaintsManagement/>}/>
             <Route path="/EmployeePage" element={<EmployeePage/>}/>
+            <Route path="/EmployeeMangment" element={<EmployeeMangment/>}/>
+          
          </Routes>
        </Router>
            
