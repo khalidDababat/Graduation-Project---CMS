@@ -2,74 +2,88 @@ import React, { Fragment } from "react";
 import styles from "./AdminLogin.module.css";
 import logo from "../../Assets/Logo-Image.jpg";
 import AdminDashboard from "../../Components/AdminDashboard/AdminDashboard.jsx";
+import EmployeePage from "../EmployeePage/EmployeePage.jsx"; 
 
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
-const AdminLogin = (e) => {
-    
+const AdminLogin = () => {
   const navigate = useNavigate();
 
-  const [userType, setUserType] = useState("");
+  const [userType, setUserType] = useState("admin");
+  
+  const [messageFeild ,setmessageFeild] =useState(""); 
 
-  const [userName, setUsername] = useState("");
+  const [username, setusername] = useState("");
   const [password, setPassword] = useState("");
 
-  const [employeeID, setEmployeeID] = useState("");
-  const [employeePassword, setEmployeePassword] = useState("");
-   
-  const handelLogin = async ()=>{
-    e.preventDefault();
-    if(userType === "admin"){
-      const res = await fetch("api/loginAdmin", {
+  const [ID_Number, setID_Number] = useState("");
+  const [passwordEmployee, setPasswordEmployee] = useState("");
+
+  const handelLogin = async (e) => {
+      e.preventDefault();
+    if (userType === "admin") {
+
+      const res = await fetch("http://localhost:5000/api/login", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          userName,
-          password,
-          role: userType
-        })
-      });
-     
+          username:username.trim(),
+          password: password.trim(),
+          role    : userType, 
 
-
+          
+        }),
+             
+         
       
-    const data = await res.json(); 
-    console.log(data);
-    if(res.status === 200){
-      navigate("/AdminDashboard");
-  } else{
-    alert("Invalid credentials");
-  } 
-  }
-// }else if(userType === "employee"){
-//   const res = await fetch("http://localhost:5000/api/employeeLogin",{
-//       method:"POST",
-//       headers:{
-//         "Content-Type":"application/json"
-//       }, 
-//       body:JSON.stringify({
-       
-//         employeeID,
-//         employeePassword,
-        
-//       })
-//     });
-//     const data = await res.json(); 
-//     if(res.status === 200){
-//       navigate("/EmployeeDashboard");
-//   } else{
-//     alert("Invalid credentials");
-//   } 
-  
+      }); 
+         
 
-// } 
-   }     
-
-
+     
+      const data = await res.json();
+      // console.log("The Data ",res.status);
+      if (res.status === 200) {
+        navigate("/AdminDashboard");
+      } else {
+        // alert("Invalid credentials");
+        setmessageFeild(" Username Or Password is Wrong!")
+        setTimeout(() => {
+           setmessageFeild("");
+        }, 7000);
+      }
    
+    
+    
+    }else if(userType === "employee"){
+      const res = await fetch("http://localhost:5000/api/login",{
+          method:"POST",
+          headers:{
+            "Content-Type":"application/json"
+          },
+          body:JSON.stringify({
+            ID_Number: ID_Number.trim(),
+            password: passwordEmployee.trim(),
+            role    : userType, 
+          })
+        });
+        const data = await res.json();
+       // console.log("for testing ",employeeID.trim() ," ",employeePassword.trim()); 
+        console.log("the Data is:",data);
+        if(res.status === 200){
+          navigate("/EmployeePage");
+      } else{
+        // alert("Invalid credentials"); 
+        setmessageFeild(" Username Or Password is Wrong!")
+        setTimeout(() => {
+           setmessageFeild("");
+        }, 7000);
+      }
+    }
+  };
+
   return (
     <Fragment>
       <div className="conteaner">
@@ -80,7 +94,13 @@ const AdminLogin = (e) => {
         <div className={styles.conteaner}>
           <h2 className={styles.heading_Conteaner}>Log In </h2>
           <div className="Login-App">
-            <form action="" method="post" onSubmit={handelLogin}>
+           {messageFeild && (
+            <div className="alert alert-danger text-center" role="alert">
+                {messageFeild}
+            </div>
+           )}
+
+            <form method="post" onSubmit={handelLogin}>
               <div className="selected">
                 <select
                   value={userType}
@@ -102,21 +122,21 @@ const AdminLogin = (e) => {
                       id="user"
                       type="text"
                       name="user-name"
-                      value={userName}
-                      onChange={(e) => setUsername(e.target.value)}
+                      value={username}
+                      onChange={(e) => setusername(e.target.value)}
                       required
                     />
                   </div>
 
                   <div className={styles.password}>
-                    <label htmlFor="pass">Password</label>
-                    <input
+                    <label  htmlFor="pass">Password</label>
+                    <input 
                       className={styles.input_field}
                       id="pass"
                       type="password"
                       name="pass"
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)} 
+                      onChange={(e) => setPassword(e.target.value)}
                       required
                     />
                   </div>
@@ -128,7 +148,7 @@ const AdminLogin = (e) => {
                     </span>
                   </div>
                 </>
-              )} 
+              )}
               {userType === "" && (
                 <>
                   <div className={styles.username}>
@@ -169,29 +189,34 @@ const AdminLogin = (e) => {
                       className={styles.input_field}
                       id="user"
                       type="text"
-                      name="ُEmployeeID"
+                      name="ُID_Number" 
+                      value={ID_Number} 
+                      onChange={(e)=> setID_Number(e.target.value)}
                       required
                     />
                   </div>
-
+                 
                   <div className={styles.password}>
                     <label htmlFor="pass">كلمة المرور</label>
                     <input
                       className={styles.input_field}
                       id="pass"
                       type="password"
-                      name="pass"
+                      name="passwordEmployee"
+                      value={passwordEmployee}
+                      onChange={(e)=>setPasswordEmployee(e.target.value)}
                       required
                     />
                   </div>
+    
 
+                  {/* /ForgetPasswordEmployee */}
                   <div className={styles.forget_password}>
-                    <span>
-                      نسيت كلمة المرور
-                      <Link to="/ForgetPasswordEmployee">
-                        تواصل مع مسؤول النظام
-                      </Link>
+                  <span>
+                      Forgot you password?{" "}
+                      <Link to="/ForgetPasswordEmployee"> Click here</Link>
                     </span>
+                    
                   </div>
                 </Fragment>
               )}
@@ -205,6 +230,16 @@ const AdminLogin = (e) => {
           </div>
         </div>
       </div>
+
+       
+       <footer>
+         <div className={styles.copyright_area}>
+          <p>جميع الحقوق محفوظة ©2025. نظام إدارة الشكاوي لبلدية عنبتا</p>
+        </div>
+
+       </footer>
+
+
     </Fragment>
   );
 };

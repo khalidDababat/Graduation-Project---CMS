@@ -164,16 +164,30 @@
   padding: 10px;
   border: none;
   background-color: #577E73;
-  color: white;
+  color: black;
   border-radius: 6px;
-  font-size: 16px;
+  font-size: 18px; 
+  font-weight: bold;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  
 }
 
   button:hover {
     background-color: #42665d;
+  } 
+
+  .copyright_area{
+    background-color: #202020; 
+    height: 60px; 
+
+
   }
-  
+  .copyright_area p{
+    color: white; 
+    text-align: center; 
+    padding: 10px;
+
+
+  }
   
  

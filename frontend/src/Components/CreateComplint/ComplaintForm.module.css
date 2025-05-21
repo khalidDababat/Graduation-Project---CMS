@@ -173,7 +173,9 @@ form > button:hover{
 } 
  
 
-
+form > label{
+    margin-top: 5px;
+}
 
 /* .footer{
     background-color: #181818;
