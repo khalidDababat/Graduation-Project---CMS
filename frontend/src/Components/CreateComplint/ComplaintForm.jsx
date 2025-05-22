@@ -7,54 +7,77 @@ import "react-phone-input-2/lib/style.css";
 // import FooterPart from "../FooterPart/FooterPart.jsx";
 // import { Link } from "react-router-dom";
 
+
 const ComplaintForm = () => {
+  const [messageSuccess ,setmessageSuccess] = useState(""); 
   const [formData, setFormData] = useState({
-    name: "",
+    full_name: "",
     phone: "",
     email: "",
-    idNumber: "",
-    department: "",
-    topic: "",
+    ID_number: "",
+    department_id: "",
+    title: "",
     description: "",
-    file: null,
+    files: [],
   });
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
 
     if (files) {
-      setFormData({ ...formData, [name]: files[0] });
+      console.log("Uploaded files:", files); // ✅ تأكيد
+      setFormData({ ...formData, [name]: Array.from(files) });
     } else {
       setFormData({ ...formData, [name]: value });
     }
+
+    console.log("hhhhhhhhhhhhh", formData);
   };
 
-
-
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const data = new FormData();
-    data.append("name", formData.name);
+    data.append("full_name", formData.full_name);
     data.append("phone", formData.phone);
     data.append("email", formData.email);
-    data.append("idNumber", formData.idNumber);
-    data.append("department", formData.department);
-    data.append("topic", formData.topic);
+    data.append("ID_number", formData.ID_number);
+    data.append("department_id", formData.department_id);
+    data.append("title", formData.title);
     data.append("description", formData.description);
-    if (formData.file) {
-      data.append("file", formData.file);
+
+    if (formData.files && formData.files.length > 0) {
+      formData.files.forEach((fileItem) => {
+        data.append("attachments", fileItem);
+      });
     }
 
-    // Here you can send formData to your backend API
+    // can send formData to your backend API
 
-    console.log("The Data is ", formData);
+    try {
+      const res = await fetch("http://localhost:5000/api/complaints/submit", {
+        method: "post",
+        body: data,
+      });
+      // const Result =await res.json();
+      // console.log("The result ",Result);
+
+      const contentType = res.headers.get("content-type");
+
+      if (contentType && contentType.includes("application/json")) {
+        const result = await res.json();
+        // console.log("The result", result); 
+        setmessageSuccess(result.message); 
+        setTimeout(() => {
+          setmessageSuccess("");
+        }, 5000);
+
+      }  
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-
-
-  
   return (
     <Fragment>
       <div className={styles.conteaner}>
@@ -70,8 +93,8 @@ const ComplaintForm = () => {
               type="text"
               required
               placeholder="الإسم الكامل "
-              name="name"
-              value={formData.name}
+              name="full_name"
+              value={formData.full_name}
               onChange={handleChange}
             />
 
@@ -128,8 +151,8 @@ const ComplaintForm = () => {
               type="text"
               required
               placeholder="رقم الهوية"
-              name="idNumber"
-              value={formData.idNumber}
+              name="ID_number"
+              value={formData.ID_number}
               onChange={handleChange}
             />
 
@@ -137,24 +160,25 @@ const ComplaintForm = () => {
             <label>الجهة المعنية</label>
             <br />
             <select
-              name="department"
+              name="department_id"
               required
-              value={formData.department}
+              value={formData.department_id}
               onChange={handleChange}
             >
-              <option value="ًengineringDepartment">دائرة الهندسية</option>
-              <option value="administrativeStuff">دائرة الشؤون الإدارية</option>
-              <option value="environment">دائرة الصحة والبيئة</option>
+              <option value="">-- اختر الجهة --</option>
+              <option value="1">دائرة الهندسية</option>
+              <option value="2">دائرة الشؤون الإدارية</option>
+              <option value="3">دائرة الصحة والبيئة</option>
             </select>
             <br />
             <label htmlFor="topic">موضوع الشكوى</label>
             <br />
             <input
               type="text"
-              name="topic"
+              name="title"
               placeholder="موضوع الشكوى"
               required
-              value={formData.topic}
+              value={formData.title}
               onChange={handleChange}
             />
             <br />
@@ -179,13 +203,18 @@ const ComplaintForm = () => {
               type="file"
               accept="image/* ,video/*"
               id="file"
-              name="file"
+              name="files"
               multiple
               onChange={handleChange}
             />
             <br />
 
             <button type="submit">إرسال</button>
+            {messageSuccess && (
+               <div className="alert alert-success" role="alert">
+                 {messageSuccess}                
+               </div>
+            )}
           </form>
         </div>
       </div>

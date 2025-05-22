@@ -13,11 +13,15 @@ const ComplaintTrack = () => {
           <form action="">
            <label htmlFor="">إدخل رقم الهوية</label> 
            <input type="text" required /> 
-           <label>رقم الهاتف</label>  
-           <input type="text" required />
-            
-           <button type="submit">متابعة الشكوى</button>
-            {/* { هون المفروض يتابع الشكوى تيجي رسالة انه حالة الشكوى ( تم ارسال الشكوى الى الهاتف واذا الشخص معندوش واتس على الموقع  )} */}
+           {/* <label>رقم الهاتف</label>  
+           <input type="text" required /> */}
+         <button type="submit">متابعة الشكوى</button>
+          
+           <div className='alert alert-info mt-4' role='alert'>
+             حالة شكواك لم تعمل بعد  
+           </div>
+
+
           </form>      
     </div>
   )
