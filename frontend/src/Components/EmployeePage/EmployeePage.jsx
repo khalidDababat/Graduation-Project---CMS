@@ -1,9 +1,26 @@
-import React, { Fragment } from "react";
+import React, { Fragment, use, useEffect, useState } from "react";
 import logo_image from "../../Assets/Logo_image.jpg";
 import { FaBars, FaUser, FaBell } from "react-icons/fa";
 import styles from "./EmployeePage.module.css";
 
-const EmployeePage = () => {
+import { useAuth  } from "../../utils/PrivateRoutes.js"; 
+import {useEmployee} from "../../utils/EmployeeContext.js"; 
+
+
+ 
+const EmployeePage = () => { 
+
+   const {user} = useAuth(); 
+   
+   const { employee} =useEmployee(); 
+   
+   
+ 
+
+  
+  // console.log(employeeData[0].FullName);
+
+
   return (
     <Fragment>
       <header className={styles.header_Admin}>
@@ -11,23 +28,23 @@ const EmployeePage = () => {
           <div className={styles.logo}>
             <img src={logo_image} className={styles.logoImage} alt="logo" />
           </div>
-          <button className={styles.navbar_toggler} type="button">
+          {/* <button className={styles.navbar_toggler} type="button">
             <FaBars size={24} />
-          </button>
+          </button> */}
         </div>
 
         <div className="d-flex ">
-          <button className={styles.btn_bell} type="button">
+          {/* <button className={styles.btn_bell} type="button">
             <FaBell size={25} />
             <span className="bg-danger" id="">
               0
             </span>
-          </button>
+          </button> */}
 
           <form action="">
             <button type="button" className={styles.btn_user} id="btn_user">
               <FaUser size={25} />
-              <span className="m-1">اسم الموظف </span>
+              <span className="m-1"> {employee?.FullName}</span>
             </button>
           </form>
         </div>

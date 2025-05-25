@@ -3,16 +3,22 @@ import logo_image from "../../Assets/Logo_image.jpg";
 import { FaUser } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import styles from "./AdminDashboard.module.css";
+import { useAuth } from "../../utils/PrivateRoutes";
+import { useNavigate } from "react-router-dom";
+import HeaderAdmin from "./HeaderAdmin";
 
 const EmployeeManagement = () => {
+  const navigate = useNavigate();
+  const { user, logOut } = useAuth();
+
   const [employees, setEmployees] = useState([]);
   const [messageSuccess, setMessageSuccess] = useState("");
   const [messageError, setMessageError] = useState("");
 
   const [form, setForm] = useState({
-    FullName: "",
+    fullName: "",
     phone: "",
-    ID_Number: "",
+    idNumber: "",
     password: "",
     email: "",
     department_id: "",
@@ -28,7 +34,6 @@ const EmployeeManagement = () => {
       const res = await fetch("http://localhost:5000/api/employees/");
       if (!res.ok) throw new Error("Error fetching employees");
       const data = await res.json();
-      // console.log("Fetched employees:", data);
       setEmployees(data);
     } catch (error) {
       console.error("Fetch Error:", error);
@@ -42,8 +47,8 @@ const EmployeeManagement = () => {
   async function addOrUpdateEmployee() {
     try {
       if (editIndex !== null) {
-        // Edite Employee
         const employeeId = employees[editIndex].id;
+
         const res = await fetch(
           `http://localhost:5000/api/employees/${employeeId}`,
           {
@@ -56,17 +61,12 @@ const EmployeeManagement = () => {
             }),
           }
         );
-
+        // console.log("theeeeee", res);
         if (!res.ok) throw new Error("Failed to update employee");
-        // alert("تم تعديل الموظف");
 
-        setMessageSuccess("Employee updated successfully✔");
-        setTimeout(() => {
-          setMessageSuccess("");
-          // setMessageError("");
-        }, 2000);
+        setMessageSuccess("تم تحديث بيانات الموظف ");
+        setTimeout(() => setMessageSuccess(""), 2000);
       } else {
-        // Add new Employee
         const res = await fetch("http://localhost:5000/api/employees", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -78,33 +78,33 @@ const EmployeeManagement = () => {
         });
 
         if (!res.ok) throw new Error("Failed to add employee");
-        // alert("تمت إضافة الموظف");
-        setMessageSuccess("The employee has been added successfully.");
-        setTimeout(() => {
-          setMessageSuccess("");
-        }, 2000);
+
+        // setMessageSuccess("The employee has been added successfully.");
+        setMessageSuccess("تم إضافة الموظف ");
+        setTimeout(() => setMessageSuccess(""), 2000);
       }
 
-      // Ubdate List Employees Tabel
       fetchEmployees();
     } catch (err) {
       console.error("Operation Error:", err);
-      // alert("حدث خطأ أثناء العملية");
       setMessageError("Error!");
-      setTimeout(() => {
-        setMessageError("");
-      }, 2000);
+      setTimeout(() => setMessageError(""), 2000);
     }
   }
+
+  const handelLogout = () => {
+    logOut();
+    navigate("/loginAdmin");
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     addOrUpdateEmployee();
 
     setForm({
-      FullName: "",
+      fullName: "",
       phone: "",
-      ID_Number: "",
+      idNumber: "",
       password: "",
       email: "",
       department_id: "",
@@ -114,6 +114,7 @@ const EmployeeManagement = () => {
 
   const handleEdit = (index) => {
     const emp = employees[index];
+    console.log("the employee Edited ", emp);
     setForm({
       fullName: emp.FullName,
       phone: emp.phone,
@@ -122,9 +123,7 @@ const EmployeeManagement = () => {
       email: emp.email,
       department_id: emp.department_id.toString(),
     });
-    // console.log(emp.FullName);
-    // console.log(emp.ID_Number);
-
+    console.log("emp.department_id ", form);
     setEditIndex(index);
   };
 
@@ -133,33 +132,23 @@ const EmployeeManagement = () => {
     const confirmDelete = window.confirm(
       "هل أنت متأكد أنك تريد حذف هذا الموظف؟"
     );
-
     if (!confirmDelete) return;
 
     try {
       const res = await fetch(
         `http://localhost:5000/api/employees/${employee.id}`,
-        {
-          method: "DELETE",
-        }
+        { method: "DELETE" }
       );
 
       if (!res.ok) throw new Error("Failed to delete employee");
 
-      // alert("تم حذف الموظف");
       setMessageError("The employee has been removed.");
-
-      setTimeout(() => {
-        setMessageError("");
-      }, 2000);
+      setTimeout(() => setMessageError(""), 2000);
       fetchEmployees();
     } catch (error) {
       console.error("Delete Error:", error);
-      // alert("فشل في حذف الموظف");
-      setMessageError("Feild Delete Employee!");
-      setTimeout(() => {
-        setMessageError("");
-      }, 2000);
+      setMessageError("Failed to delete employee!");
+      setTimeout(() => setMessageError(""), 2000);
     }
   };
 
@@ -171,13 +160,13 @@ const EmployeeManagement = () => {
 
   return (
     <Fragment>
-      <header className={styles.header_Admin}>
+      {/* <header className={styles.header_Admin}>
         <div className="d-flex">
           <div className={styles.logo}>
             <img src={logo_image} className={styles.logoImage} alt="logo" />
           </div>
           <div className="d-inline ms-5 p-4">
-            <h4>إدارة الموظفين</h4>
+            <h4 className="mt-1">لوحة تحكم المسؤول - بلدية عنبتا</h4>
           </div>
         </div>
 
@@ -185,11 +174,16 @@ const EmployeeManagement = () => {
           <form>
             <button type="button" className={styles.btn_user}>
               <FaUser size={25} />
-              <span className="m-1">موظف</span>
+              <span className="m-1">{user?.username}</span>
             </button>
           </form>
         </div>
-      </header>
+      </header> */}
+          
+          <div>
+            <HeaderAdmin/>
+          </div>
+      
 
       <div className={styles.conteant_page}>
         <div>
@@ -199,18 +193,27 @@ const EmployeeManagement = () => {
                 <Link to="/AdminDashboard">قائمة الشكاوي </Link>
               </li>
               <li>
-                <Link to="">الشكاوي الصادرة</Link>
+                <Link to="/EmployeeMangment">إدارة الموظفين</Link>
+              </li>
+              <li>
+                <Link to="/ComplaintsIssuedAdmin">الشكاوي الصادرة</Link>
                 <span className={styles.notify_complaint}>0</span>
               </li>
               <li>
-                <Link to="">الشكاوي الواردة </Link>
+                <Link to="/ComplaintsReceivedAdmin">الشكاوي الواردة </Link>
                 <span className={styles.notify_complaint}>0</span>
               </li>
-              <li>
+              {/* <li>
                 <Link to="">تغيير كلمة السر</Link>
-              </li>
+              </li> */}
               <li>
-                <Link>تسجيل الخروج</Link>
+                <button
+                  onClick={handelLogout}
+                  className="btn btn-danger w-100 mt-2"
+                >
+                  تسجيل الخروج
+                </button>
+
               </li>
             </ul>
           </div>
@@ -230,72 +233,106 @@ const EmployeeManagement = () => {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} method="post" className="mb-4">
+          <form onSubmit={handleSubmit} className="mb-4">
+            <label htmlFor="fullName">اسم الموظف</label>
             <input
               type="text"
+              id="fullName"
               name="fullName"
-              placeholder="اسم الموظف"
               value={form.fullName}
               onChange={handleChange}
               required
               className="form-control mb-2"
             />
 
+            <label htmlFor="phone">رقم الهاتف</label>
             <input
               type="text"
+              id="phone"
               name="phone"
-              placeholder="رقم الهاتف"
               value={form.phone}
               onChange={handleChange}
               required
               className="form-control mb-2"
             />
 
+            <label htmlFor="idNumber">رقم الهوية</label>
             <input
               type="text"
+              id="idNumber"
               name="idNumber"
-              placeholder="رقم الهوية"
               value={form.idNumber}
               onChange={handleChange}
               required
               className="form-control mb-2"
             />
 
+            <label htmlFor="email">البريد الإلكتروني</label>
             <input
               type="email"
+              id="email"
               name="email"
-              placeholder="البريد الإلكتروني"
               value={form.email}
               onChange={handleChange}
               required
               className="form-control mb-2"
             />
+
+            <label htmlFor="department_id">اختر الدائرة</label>
             <select
+              id="department_id"
               name="department_id"
               value={form.department_id}
               onChange={handleChange}
               required
               className="form-control mb-2"
             >
-              <option value="">اختر الدائرة</option>
+              <option value="">-- اختر الدائرة --</option>
               {departments.map((dept) => (
-                <option key={dept.id} value={dept.id}>
-                  {dept.name}
-                </option>
+                <option value={dept.id}>{dept.name}</option>
               ))}
             </select>
+
+            <label htmlFor="password">كلمة المرور</label>
             <input
               type="password"
+              id="password"
               name="password"
-              placeholder="كلمة المرور"
               value={form.password}
               onChange={handleChange}
-              required={!editIndex}
               className="form-control mb-2"
             />
-            <button type="submit" className="btn btn-success">
-              {editIndex !== null ? "تحديث الموظف" : "إضافة الموظف"}
-            </button>
+
+            <div className="d-flex gap-2">
+              {editIndex === null ? (
+                <button type="submit" className="btn btn-success">
+                  إضافة الموظف
+                </button>
+              ) : (
+                <>
+                  <button type="submit" className="btn btn-primary">
+                    تحديث الموظف
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => {
+                      setEditIndex(null);
+                      setForm({
+                        fullName: "",
+                        phone: "",
+                        idNumber: "",
+                        password: "",
+                        email: "",
+                        department_id: "",
+                      });
+                    }}
+                  >
+                    إلغاء التعديل
+                  </button>
+                </>
+              )}
+            </div>
           </form>
 
           <h5>قائمة الموظفين</h5>

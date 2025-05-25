@@ -1,245 +1,170 @@
-import React, { Fragment } from "react";
-import styles from "./AdminLogin.module.css";
-import logo from "../../Assets/Logo-Image.jpg";
-import AdminDashboard from "../../Components/AdminDashboard/AdminDashboard.jsx";
-import EmployeePage from "../EmployeePage/EmployeePage.jsx"; 
-
+import React, { useState, Fragment } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import logo from "../../Assets/Logo_image.jpg"; 
+import {useAuth} from  "../../utils/PrivateRoutes.js"; 
+// import styles from "./AdminLogin.module.css";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
-
+ 
+   const {login} = useAuth(); 
   const [userType, setUserType] = useState("admin");
-  
-  const [messageFeild ,setmessageFeild] =useState(""); 
 
-  const [username, setusername] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const [ID_Number, setID_Number] = useState("");
   const [passwordEmployee, setPasswordEmployee] = useState("");
 
-  const handelLogin = async (e) => {
-      e.preventDefault();
-    if (userType === "admin") {
+  const [messageField, setMessageField] = useState("");
 
-      const res = await fetch("http://localhost:5000/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username:username.trim(),
-          password: password.trim(),
-          role    : userType, 
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    const url = "http://localhost:5000/api/login";
+    const payload =
+      userType === "admin"
+        ? { username: username.trim(), password: password.trim(), role: userType }
+        : { ID_Number: ID_Number.trim(), password: passwordEmployee.trim(), role: userType };
 
-          
-        }),
-             
-         
-      
-      }); 
-         
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
 
-     
-      const data = await res.json();
-      // console.log("The Data ",res.status);
-      if (res.status === 200) {
+    const data = await res.json();
+    // console.log(data);
+
+    if (res.status === 200) { 
+      if(userType === "admin"){
+        login({username});   // save user data globally
         navigate("/AdminDashboard");
-      } else {
-        // alert("Invalid credentials");
-        setmessageFeild(" Username Or Password is Wrong!")
-        setTimeout(() => {
-           setmessageFeild("");
-        }, 7000);
+      }else{
+        login(data);
+        navigate("/EmployeePage");
       }
-   
-    
-    
-    }else if(userType === "employee"){
-      const res = await fetch("http://localhost:5000/api/login",{
-          method:"POST",
-          headers:{
-            "Content-Type":"application/json"
-          },
-          body:JSON.stringify({
-            ID_Number: ID_Number.trim(),
-            password: passwordEmployee.trim(),
-            role    : userType, 
-          })
-        });
-        const data = await res.json();
-       // console.log("for testing ",employeeID.trim() ," ",employeePassword.trim()); 
-        console.log("the Data is:",data);
-        if(res.status === 200){
-          navigate("/EmployeePage");
-      } else{
-        // alert("Invalid credentials"); 
-        setmessageFeild(" Username Or Password is Wrong!")
-        setTimeout(() => {
-           setmessageFeild("");
-        }, 7000);
+      
+     
+    } else {
+      if(userType === "admin"){
+      setMessageField("إسم المستخدم او كلمة المرور خطأ ");
+      setTimeout(() => setMessageField(""), 9000);
+      }else{
+      setMessageField("رقم الهوية او كلمة المرور خطأ ");
+      setTimeout(() => setMessageField(""), 9000);
       }
     }
   };
 
   return (
     <Fragment>
-      <div className="conteaner">
-        <div className={styles.side}>
-          <img src={logo} alt="logo" className={styles.side_img} />
-        </div>
+      <div className="container py-5">
+        <div className="row justify-content-center align-items-center min-vh-100">
+          <div className="col-md-6">
+            <div className="card shadow-lg p-4">
+              <div className="text-center mb-3">
+                <img src={logo} alt="Logo" width="100" />
+                <h3 className="mt-3">تسجيل الدخول</h3>
+              </div>
 
-        <div className={styles.conteaner}>
-          <h2 className={styles.heading_Conteaner}>Log In </h2>
-          <div className="Login-App">
-           {messageFeild && (
-            <div className="alert alert-danger text-center" role="alert">
-                {messageFeild}
+              {messageField && (
+                <div className="alert alert-danger text-center">{messageField}</div>
+              )}
+
+              <form onSubmit={handleLogin}>
+                <div className="mb-3">
+                  {/* <label className="form-label">اختر نوع المستخدم</label> */}
+                  <select
+                    className="form-select"
+                    value={userType}
+                    onChange={(e) => setUserType(e.target.value)}
+                  >
+                    <option value="admin">مسؤول النظام</option>
+                    <option value="employee">موظف</option>
+                  </select>
+                </div>
+
+                {userType === "admin" && (
+                  <>
+                    <div className="form-floating mb-3">
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="adminUsername"
+                        placeholder="اسم المستخدم"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        required
+                      />
+                      <label htmlFor="adminUsername">اسم المستخدم</label>
+                    </div>
+                    <div className="form-floating mb-3">
+                      <input
+                        type="password"
+                        className="form-control"
+                        id="adminPassword"
+                        placeholder="كلمة المرور"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                      />
+                      <label htmlFor="adminPassword">كلمة المرور</label>
+                    </div>
+                    <div className="text-end mb-3">
+                      <Link to="/ForgetPassword" className="text-decoration-none">
+                        هل نسيت كلمة المرور؟
+                      </Link>
+                    </div>
+                  </>
+                )}
+
+                {userType === "employee" && (
+                  <>
+                    <div className="form-floating mb-3">
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="employeeID"
+                        placeholder="رقم الهوية"
+                        value={ID_Number}
+                        onChange={(e) => setID_Number(e.target.value)}
+                        required
+                      />
+                      <label htmlFor="employeeID">رقم الهوية</label>
+                    </div>
+                    <div className="form-floating mb-3">
+                      <input
+                        type="password"
+                        className="form-control"
+                        id="employeePassword"
+                        placeholder="كلمة المرور"
+                        value={passwordEmployee}
+                        onChange={(e) => setPasswordEmployee(e.target.value)}
+                        required
+                      />
+                      <label htmlFor="employeePassword">كلمة المرور</label>
+                    </div>
+                    <div className="text-end mb-3">
+                      <Link to="/ForgetPassword" className="text-decoration-none">
+                        هل نسيت كلمة المرور؟
+                      </Link>
+                    </div>
+                  </>
+                )}
+
+                <div className="d-grid">
+                  <button type="submit" className="btn btn-primary">
+                    تسجيل دخول
+                  </button>
+                </div>
+              </form>
             </div>
-           )}
-
-            <form method="post" onSubmit={handelLogin}>
-              <div className="selected">
-                <select
-                  value={userType}
-                  onChange={(e) => setUserType(e.target.value)}
-                  className={styles.selected_Login}
-                  name="Login"
-                  id=""
-                >
-                  <option value="admin">مسؤول النظام</option>
-                  <option value="employee">موظف</option>
-                </select>
-              </div>
-              {userType === "admin" && (
-                <>
-                  <div className={styles.username}>
-                    <label htmlFor="user">Username</label>
-                    <input
-                      className={styles.input_field}
-                      id="user"
-                      type="text"
-                      name="user-name"
-                      value={username}
-                      onChange={(e) => setusername(e.target.value)}
-                      required
-                    />
-                  </div>
-
-                  <div className={styles.password}>
-                    <label  htmlFor="pass">Password</label>
-                    <input 
-                      className={styles.input_field}
-                      id="pass"
-                      type="password"
-                      name="pass"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                    />
-                  </div>
-
-                  <div className={styles.forget_password}>
-                    <span>
-                      Forgot you password?{" "}
-                      <Link to="/ForgetPasswordAdmin"> Click here</Link>
-                    </span>
-                  </div>
-                </>
-              )}
-              {userType === "" && (
-                <>
-                  <div className={styles.username}>
-                    <label htmlFor="user">Username</label>
-                    <input
-                      className={styles.input_field}
-                      id="user"
-                      type="text"
-                      name="user-name"
-                      required
-                    />
-                  </div>
-
-                  <div className={styles.password}>
-                    <label htmlFor="pass">Password</label>
-                    <input
-                      className={styles.input_field}
-                      id="pass"
-                      type="password"
-                      name="pass"
-                      required
-                    />
-                  </div>
-
-                  <div className={styles.forget_password}>
-                    <span>
-                      Forgot you password?{" "}
-                      <Link to="/ForgetPasswordAdmin"> Click here</Link>
-                    </span>
-                  </div>
-                </>
-              )}
-              {userType === "employee" && (
-                <Fragment>
-                  <div className={styles.username}>
-                    <label htmlFor="user">رقم الهوية</label>
-                    <input
-                      className={styles.input_field}
-                      id="user"
-                      type="text"
-                      name="ُID_Number" 
-                      value={ID_Number} 
-                      onChange={(e)=> setID_Number(e.target.value)}
-                      required
-                    />
-                  </div>
-                 
-                  <div className={styles.password}>
-                    <label htmlFor="pass">كلمة المرور</label>
-                    <input
-                      className={styles.input_field}
-                      id="pass"
-                      type="password"
-                      name="passwordEmployee"
-                      value={passwordEmployee}
-                      onChange={(e)=>setPasswordEmployee(e.target.value)}
-                      required
-                    />
-                  </div>
-    
-
-                  {/* /ForgetPasswordEmployee */}
-                  <div className={styles.forget_password}>
-                  <span>
-                      Forgot you password?{" "}
-                      <Link to="/ForgetPasswordEmployee"> Click here</Link>
-                    </span>
-                    
-                  </div>
-                </Fragment>
-              )}
-
-              <div>
-                <button className={styles.login_btn} type="submit">
-                  تسجيل دخول
-                </button>
-              </div>
-            </form>
+            <div className="text-center mt-4 text-muted small">
+              جميع الحقوق محفوظة ©2025. نظام إدارة الشكاوي لبلدية عنبتا
+            </div>
           </div>
         </div>
       </div>
-
-       
-       <footer>
-         <div className={styles.copyright_area}>
-          <p>جميع الحقوق محفوظة ©2025. نظام إدارة الشكاوي لبلدية عنبتا</p>
-        </div>
-
-       </footer>
-
-
     </Fragment>
   );
 };

@@ -15,29 +15,45 @@ const Footer = () => {
               يتطلع نظام إدارة الشكاوى لبلدية عنبتا إلى تقديم خدمة بلدية
               إلكترونية فعالة، تضمن سرعة الاستجابة، ورفع جودة المتابعة، وتعزيز
               الشفافية في معالجة الشكاوى.
-            </p>
+            </p> 
+            <div className={styles.social_icons}>
+               <a href="#">
+                  <img src={youtup} alt="YouTube" />
+                </a>
+                <a href="#">
+                  <img src={insta} alt="Instagram" />
+                </a>
+                <a href="#">
+                  <img src={insta} alt="Instagram" />
+                </a>
+            </div>
           </div>
 
-          <div className={styles.social_icons}>
+          {/* <div className={styles.social_icons}>
             <h3>تواصل معنا </h3>
             <ul>
               <li>
                 <a href="#">
                   <img src={youtup} alt="YouTube" />
                 </a>
-              </li>
-              <li>
-                <a href="#">
+                 <a href="#">
                   <img src={insta} alt="Instagram" />
                 </a>
               </li>
               <li>
                 <a href="#">
-                  <img src={face} alt="Facebook" />
+                  <img src={insta} alt="Instagram" />
                 </a>
+                
+              </li>
+              <li>
+                <a href="#">
+                  <img src={face} alt="Facebook" /> 
+                </a>
+               
               </li>
             </ul>
-          </div>
+          </div> */}
 
           <div>
             <Link className={styles.logInEmoloyees} to="/loginAdmin">

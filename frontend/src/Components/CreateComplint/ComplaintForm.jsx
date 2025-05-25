@@ -1,15 +1,19 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useRef, useEffect } from "react";
 import styles from "./ComplaintForm.module.css";
+import FooterPart from "../FooterPart/FooterPart.jsx";
+import HeaderPart from "../HeaderPart/Header.jsx";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+
+import { BsCheckCircleFill } from "react-icons/bs";
+import { Link } from "react-router-dom";
 
 // import logo from "../../Assets/Logo-Image.jpg";
 // import FooterPart from "../FooterPart/FooterPart.jsx";
 // import { Link } from "react-router-dom";
 
-
 const ComplaintForm = () => {
-  const [messageSuccess ,setmessageSuccess] = useState(""); 
+  const [messageSuccess, setmessageSuccess] = useState("");
   const [formData, setFormData] = useState({
     full_name: "",
     phone: "",
@@ -25,17 +29,22 @@ const ComplaintForm = () => {
     const { name, value, files } = e.target;
 
     if (files) {
-      console.log("Uploaded files:", files); // ✅ تأكيد
+      // console.log("Uploaded files:", files);
       setFormData({ ...formData, [name]: Array.from(files) });
     } else {
       setFormData({ ...formData, [name]: value });
     }
 
-    console.log("hhhhhhhhhhhhh", formData);
+    // console.log("hhhhhhhhhhhhh", formData);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.phone || formData.phone.trim() === "") {
+      alert("يرجى إدخال رقم الهاتف");
+      return;
+    }
 
     const data = new FormData();
     data.append("full_name", formData.full_name);
@@ -66,13 +75,24 @@ const ComplaintForm = () => {
 
       if (contentType && contentType.includes("application/json")) {
         const result = await res.json();
-        // console.log("The result", result); 
-        setmessageSuccess(result.message); 
+        // console.log("The result", result);
+        setmessageSuccess(
+          "شكرًا لمراسلتنا. سيتم معالجة شكواك من قبل البلدية في أقرب وقت ممكن"
+        );
         setTimeout(() => {
           setmessageSuccess("");
         }, 5000);
-
-      }  
+      }
+      setFormData({
+        full_name: "",
+        phone: "",
+        email: "",
+        ID_number: "",
+        department_id: "",
+        title: "",
+        description: "",
+        files: [],
+      });
     } catch (error) {
       console.log(error);
     }
@@ -80,6 +100,16 @@ const ComplaintForm = () => {
 
   return (
     <Fragment>
+      {/* <div className={styles.home_header}>
+          <h4 className={styles.header_logo}>إدارة الشكاوي</h4>
+          <div className={styles.action}>
+            <Link to="/">الصفحة الرئيسية</Link>
+          </div>
+        </div> */}
+      <div className="mb-4">
+        <HeaderPart />
+      </div>
+
       <div className={styles.conteaner}>
         <div className={styles.complaint_Content}>
           <div className={styles.title_page}>
@@ -110,6 +140,7 @@ const ComplaintForm = () => {
               value={formData.phone}
               onChange={handleChange}
             /> */}
+
             <PhoneInput
               className=""
               value={formData.phone}
@@ -211,12 +242,20 @@ const ComplaintForm = () => {
 
             <button type="submit">إرسال</button>
             {messageSuccess && (
-               <div className="alert alert-success" role="alert">
-                 {messageSuccess}                
-               </div>
+              <div
+                class="alert alert-success d-flex align-items-center"
+                role="alert"
+              >
+                <BsCheckCircleFill className="me-2 text-success" size={24} />
+                <div className="fs-4">{messageSuccess}</div>
+              </div>
             )}
           </form>
         </div>
+      </div>
+
+      <div>
+        <FooterPart />
       </div>
     </Fragment>
   );
