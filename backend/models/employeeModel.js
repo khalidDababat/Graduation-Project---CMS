@@ -18,7 +18,7 @@ async function addEmployee(employee) {
 }
 
 //fetch all employee with depatment name
-async function getAllEmployees() {
+async function getAllEmployeesWithDepartment() {
   const [rows] = await db.query(`
     SELECT e.*, d.name AS department_Name
     FROM employees e
@@ -54,9 +54,22 @@ async function deleteEmployee(id) {
   return result;
 }
 
+getAllEmployees = async () => {
+  const [rows] = await db.query(`SELECT * FROM employees`);
+  return rows;
+};
+
+getEmployeesById = async (id) => {
+  const [rows] = await db.query(`SELECT * FROM employees  WHERE id = ?`,[id]);
+  return rows;
+  
+};
+
 module.exports = {
   addEmployee,
-  getAllEmployees,
+  getAllEmployeesWithDepartment,
   updateEmployee,
-  deleteEmployee
+  deleteEmployee,
+  getAllEmployees,
+  getEmployeesById
 };

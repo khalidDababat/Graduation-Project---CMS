@@ -21,11 +21,11 @@ exports.submitComplaint = async (req, res) => {
       description
     } = req.body;
 
-    if (!full_name || !ID_number || !phone  || !department_id || !title || !description) {
+    if (!ID_number || !phone  || !department_id || !title || !description) {
       return res.status(400).json({ message: 'fields are required.' });
     }
-
-   const created_at = moment().format('YYYY-MM-DD HH:mm:ss');
+     // HH:mm:ss
+   const created_at = moment().format('YYYY-MM-DD ');
 
     const userData = {
       full_name,

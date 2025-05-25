@@ -22,7 +22,7 @@ async function addEmployee(req, res) {
 
 async function getEmployees(req, res) {
   try {
-    const employees = await employeeModel.getAllEmployees();
+    const employees = await employeeModel.getAllEmployeesWithDepartment();
     res.json(employees);
   } catch (err) {
     console.error(err);
@@ -56,9 +56,23 @@ async function deleteEmployee(req, res) {
   }
 }
 
+async function EmployeesById(req, res) {
+   try{
+    const id = req.params.id;
+    const employee = await employeeModel.getEmployeesById(id);
+    res.json(employee);
+
+   }
+   catch(err){
+    res.status(500).json({ message: 'Server error' });
+   }
+  
+}
+
 module.exports = {
   addEmployee,
   getEmployees,
   updateEmployee,
-  deleteEmployee
+  deleteEmployee,
+  EmployeesById
 };
