@@ -16,12 +16,17 @@ router.delete('/deleteComplaint/:id', adminComplaintController.deleteComplaintby
 
 router.put('/updateStatus', adminComplaintController.updateStatus);//done
 
+router.get('/getstatus', adminComplaintController.getComplaintByStatus);//done
+
+router.get('/getCountstatus', adminComplaintController.countComplaintByStatus);// done
+
+router.get('/getCountComplaints', adminComplaintController.countComplaints);// done
 
 
-router.post('/assignComplaint', adminComplaintController.assignComplaint);
-router.post('/returnComplaint', adminComplaintController.returnComplaint);
-router.get('/incomingComplaints', adminComplaintController.getIncoming);
-router.get('/outgoingComplaints', adminComplaintController.getOutgoing);
+router.post('/assignComplaint', adminComplaintController.assignComplaint);//Done
+router.post('/returnComplaint', adminComplaintController.returnComplaint);//Done
+router.get('/incomingComplaints', adminComplaintController.getIncoming);//done
+router.get('/outgoingComplaints', adminComplaintController.getOutgoing);//done
 
 
 

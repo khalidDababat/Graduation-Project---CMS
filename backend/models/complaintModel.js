@@ -92,6 +92,38 @@ exports.updateStatus = async (complaint_id, status) => {
 
 };
 
+exports.getComplaintsByStatus = async (status) => {
+
+  return await db.query(
+        `SELECT * 
+        FROM  complaints
+        WHERE status = ?`,
+        [status]
+    );
+
+}
+
+exports.getCountComplaintsByStatus = async (status) => {
+
+  return await db.query(
+        `SELECT COUNT(*) 
+        FROM  complaints
+        WHERE status = ?`,
+        [status]
+    );
+
+}
+
+exports.getCountComplaints= async () => {
+
+  return await db.query(
+        `SELECT COUNT(*) 
+        FROM  complaints`
+        
+    );
+
+}
+
 
 exports.assignComplaint = async ({ complaint_id, employee_id, admin_id, note }) => {
 
@@ -122,7 +154,7 @@ exports.assignComplaint = async ({ complaint_id, employee_id, admin_id, note }) 
 exports.returnComplaint = async ({ complaint_id, employee_id, note }) => {
 
         const [existing] = await db.query(
-        `SELECT * FROM Complaint_Transfer_Log 
+        `SELECT * FROM complaint_transfer_log 
         WHERE complaint_id = ? AND from_user_type = 'employee' 
         AND from_user_id = ? AND transfer_type = 'returned'`,
     [complaint_id, employee_id]
@@ -145,18 +177,31 @@ exports.returnComplaint = async ({ complaint_id, employee_id, note }) => {
     );
 };
 
+// Get Incoming Complaints
 exports.getIncomingComplaints = async (type, user_id) => {
     return await db.query(
-    `SELECT * FROM complaint_transfer_log WHERE to_user_type = ? AND to_user_id = ? ORDER BY created_at DESC`,
-    [type, user_id]
+        `SELECT ctl.*, c.title, c.status
+         FROM complaint_transfer_log ctl
+         JOIN complaints c ON ctl.complaint_id = c.id
+         WHERE ctl.to_user_type = ? AND ctl.to_user_id = ?
+         ORDER BY ctl.created_at DESC`,
+        [type, user_id]
     );
 };
 
+// Get Outgoing Complaints
 exports.getOutgoingComplaints = async (type, user_id) => {
     return await db.query(
-    `SELECT * FROM complaint_transfer_log WHERE from_user_type = ? AND from_user_id = ? ORDER BY created_at DESC`,
-    [type, user_id]
+        `SELECT ctl.*, c.title, c.status
+         FROM complaint_transfer_log ctl
+         JOIN complaints c ON ctl.complaint_id = c.id
+         WHERE ctl.from_user_type = ? AND ctl.from_user_id = ?
+         ORDER BY ctl.created_at DESC`,
+        [type, user_id]
     );
 };
+
+
+
 
 

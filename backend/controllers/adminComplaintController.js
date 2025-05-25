@@ -132,26 +132,54 @@ exports.updateStatus = async (req,res) => {
   }
   catch(err){
     res.status(500).json({message: 'Server error',error: err.message});
+
   }
 }
+exports.getComplaintByStatus = async (req,res) => {
 
-// exports.assignComplaint =async (req,res) => {
-//   const { complaint_id,
-//           employee_id,
-//           admin_id,
-//           note} = req.body;
-//           // console.log('Received data:', req.body);
+        const {status} = req.query;
+        // console.log('status:', status);
+        try{
+        const [results] = await complaintModel.getComplaintsByStatus(status);
+        res.status(200).json(results);
+
+        }
+        catch(err){
+            res.status(500).json({message: 'Server error',error: err.message}); 
   
-//           try{
-//             const assignComplaint = await complaintModel.assignComplaint({ complaint_id, employee_id, admin_id, note });
-//             res.status(200).json({message: 'Complaint assigned successfully.'});
+        }
 
-//           }
-//           catch(err){
-//             res.status(500).json({message: 'Server error',error: err.message});
-//           }
-// }
+}
 
+exports.countComplaintByStatus = async (req,res) => {
+
+        const {status} = req.query;
+        // console.log('status:', status);
+        try{
+        const [results] = await complaintModel.getCountComplaintsByStatus(status);
+        res.status(200).json(results);
+
+        }
+        catch(err){
+            res.status(500).json({message: 'Server error',error: err.message}); 
+  
+        }
+
+}
+exports.countComplaints = async (req,res) => {
+
+        
+        try{
+        const [results] = await complaintModel.getCountComplaints();
+        res.status(200).json(results);
+
+        }
+        catch(err){
+            res.status(500).json({message: 'Server error',error: err.message}); 
+  
+        }
+
+}
 
 exports.assignComplaint = async (req, res) => {
   const { complaint_id, employee_id, admin_id, note } = req.body;
@@ -167,6 +195,8 @@ exports.assignComplaint = async (req, res) => {
 exports.returnComplaint = async (req, res) => {
   const { complaint_id, employee_id, note } = req.body;
 
+  //  console.log('Received data:', req.body);
+
   if (!complaint_id || !employee_id) {
     return res.status(400).json({ message: "complaint_id and employee_id are required" });
   }
@@ -180,7 +210,7 @@ exports.returnComplaint = async (req, res) => {
 };
 
 exports.getIncoming = async (req, res) => {
-  const { type, user_id } = req.query; // type: 'admin' or 'employee'
+  const { type, user_id } = req.query;
 
   try {
     const [result] = await complaintModel.getIncomingComplaints(type, user_id);
@@ -200,4 +230,7 @@ exports.getOutgoing = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
+
+
 
