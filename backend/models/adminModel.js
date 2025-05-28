@@ -8,7 +8,7 @@ const findAdminById = async (id) => {
 
 
 const updateAdminInfo = async (id, username, email) => {
-  const query = 'UPDATE admins SET BINARY username = ?, email = ? WHERE id = ?';
+  const query = 'UPDATE admins SET  username = ?, email = ? WHERE id = ?';
   await db.query(query, [username, email, id]);
 };
 
