@@ -3,10 +3,12 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const path = require('path');
 const db = require('./config/db');
-const authRoutes = require('./routes/authRoutes');//done
-const employeeRoutes = require('./routes/employeeRoutes');//done
-const complaintRoutes = require('./routes/complaintRoutes'); // done
+const authRoutes = require('./routes/authRoutes');
+const employeeRoutes = require('./routes/employeeRoutes');
+const complaintRoutes = require('./routes/complaintRoutes'); 
 const adminComplaintRoutes = require('./routes/adminComplaintRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+
 require('dotenv').config();
 
 const app = express();
@@ -19,9 +21,11 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
 
 app.use('/api', authRoutes);
+app.use('/api/admin', adminRoutes); // update-profile  admin
 app.use('/api/employees', employeeRoutes);
 app.use('/api/complaints', complaintRoutes);
 app.use('/api/admin', adminComplaintRoutes);
+
 
 
 // app.get('/api/test', (req, res) => {

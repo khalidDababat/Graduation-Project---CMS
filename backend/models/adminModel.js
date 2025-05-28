@@ -1,16 +1,24 @@
 const db = require('../config/db');
+const bcrypt = require('bcrypt');
 
-const findAdminByEmail = (email, callback) => {
-  const sql = 'SELECT * FROM admin WHERE email = ?';
-  db.query(sql, [email], callback);
+const findAdminById = async (id) => {
+  const [results] = await db.query('SELECT * FROM admins WHERE id = ?', [id]);
+  return results[0];
 };
 
-const updateAdminPassword = (email, hashedPassword, callback) => {
-  const sql = 'UPDATE admin SET password = ? WHERE email = ?';
-  db.query(sql, [hashedPassword, email], callback);
+
+const updateAdminInfo = async (id, username, email) => {
+  const query = 'UPDATE admins SET BINARY username = ?, email = ? WHERE id = ?';
+  await db.query(query, [username, email, id]);
+};
+
+const updateAdminPassword = async (id, hashedPassword) => {
+  const query = 'UPDATE admins SET password = ? WHERE id = ?';
+  await db.query(query, [hashedPassword, id]);
 };
 
 module.exports = {
-  findAdminByEmail,
-  updateAdminPassword
+  findAdminById,
+  updateAdminInfo,
+  updateAdminPassword,
 };

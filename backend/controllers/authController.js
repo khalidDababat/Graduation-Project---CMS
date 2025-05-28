@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
 const nodemailer = require('nodemailer');
+const jwt = require('jsonwebtoken');
 const {
   findAdminByUsername,
   findEmployeeByIDNumber,
@@ -33,8 +34,14 @@ const login = async (req, res) => {
       if (!isMatch)
         return res.status(401).json({ message: 'Invalid admin credentials.' });
 
+      const token = jwt.sign(
+        { id: admin.id, role: 'admin' },
+        process.env.JWT_SECRET,
+        { expiresIn: '1h' }
+      );
       return res.status(200).json({
         message: 'Admin login successful',
+        token,
         role: 'admin',
         id: admin.id,
         username: admin.username,
@@ -55,8 +62,15 @@ const login = async (req, res) => {
       if (!isMatch)
         return res.status(401).json({ message: 'Invalid employee credentials.' });
 
+      const token = jwt.sign(
+        { id: employee.id, role: 'employee' },
+        process.env.JWT_SECRET,
+        { expiresIn: '1h' }
+      );
+
       return res.status(200).json({
         message: 'Employee login successful',
+        token,
         role: 'employee',
         id: employee.id,
         name: employee.name,
@@ -70,6 +84,19 @@ const login = async (req, res) => {
     return res.status(500).json({ message: 'Database error', error: error.message });
   }
 };
+
+const verifyJWTToken = (req, res) => {
+  const { token } = req.body;
+  if (!token) return res.status(400).json({ message: 'Token is required' });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    return res.status(200).json({ valid: true, data: decoded });
+  } catch (err) {
+    return res.status(401).json({ valid: false, message: 'Invalid or expired token' });
+  }
+};
+
 
 const requestLogin = async (req, res) => {
   try {
@@ -131,4 +158,5 @@ module.exports = {
   login,
   requestLogin,
   verifyToken,
+  verifyJWTToken,
 };

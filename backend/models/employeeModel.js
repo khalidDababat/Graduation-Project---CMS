@@ -65,11 +65,22 @@ getEmployeesById = async (id) => {
   
 };
 
+// const findEmployeeByIDNumber = async (ID_Number) => {
+//   const query = 'SELECT * FROM employees WHERE ID_Number = ?';
+//   return await db.query(query, [ID_Number]);
+// };
+
+const updateEmployeePasswordByIDNumber  = async (ID_Number, hashedPassword) => {
+  const query = 'UPDATE employees SET password = ? WHERE ID_Number = ?';
+  return await db.query(query, [hashedPassword, ID_Number]);
+};
+
 module.exports = {
   addEmployee,
   getAllEmployeesWithDepartment,
   updateEmployee,
   deleteEmployee,
   getAllEmployees,
-  getEmployeesById
+  getEmployeesById,
+  updateEmployeePasswordByIDNumber
 };

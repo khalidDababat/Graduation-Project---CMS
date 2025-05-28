@@ -1,7 +1,7 @@
 const db = require('../config/db'); 
 
 const findAdminByUsername = async (username) => {
-  const query = 'SELECT * FROM admins WHERE username = ?';
+  const query = 'SELECT * FROM admins WHERE BINARY username = ?';
   const [results] = await db.query(query, [username]);
   return results;
 };

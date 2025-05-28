@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt');
 const employeeModel = require('../models/employeeModel');
 const { hashPassword } = require('../services/hashService');
 
@@ -69,10 +70,39 @@ async function EmployeesById(req, res) {
   
 }
 
+const updateEmployeeSettings = async (req, res) => {
+  try {
+    const {  password, confirmPassword } = req.body;
+    const role = req.user.role;
+    const ID_Number = req.user.ID_Number;
+
+     if (role !== 'employee') {
+      return res.status(403).json({ message: 'Only employees can update their password.' });
+    }
+
+    if (!password || !confirmPassword) {
+      return res.status(400).json({ message: 'Both password and confirmPassword are required.' });
+    }
+
+    if (password !== confirmPassword) {
+      return res.status(400).json({ message: 'Passwords do not match.' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await employeeModel.updateEmployeePasswordByIDNumber (ID_Number, hashedPassword);
+
+    return res.status(200).json({ message: 'Password updated successfully.' });
+  } catch (err) {
+    console.error('Error updating employee settings:', err);
+    return res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
 module.exports = {
   addEmployee,
   getEmployees,
   updateEmployee,
   deleteEmployee,
-  EmployeesById
+  EmployeesById,
+  updateEmployeeSettings
 };
