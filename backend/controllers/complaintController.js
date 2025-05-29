@@ -78,4 +78,18 @@ exports.getComplaintsByCitizenIDNumber = async (req, res) => {
     console.error('Error fetching complaints:', err);
     return res.status(500).json({ message: 'Server error', error: err.message });
   }
+
 };
+
+exports.getAssignedComplaints = async (req, res) => {
+  const employeeId = req.params.employeeId;
+
+  try {
+    const results = await complaintModel.getAssignedComplaints(employeeId);
+    res.status(200).json(results);
+  } catch (err) {
+    console.error('Error fetching assigned complaints:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+

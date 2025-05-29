@@ -221,6 +221,40 @@ exports.getComplaintsByCitizenIDNumber =async (ID_Number) => {
   
 };
 
+exports.getAssignedComplaints = async (employeeId) => {
+  const [results] = await db.query(`
+    SELECT 
+      complaints.id AS complaint_id,
+      complaints.title,
+      complaints.description,
+      complaints.status,
+      complaints.image_path,
+      complaints.Note,
+      complaints.created_at,
+      complaints.department_id,
+
+      employees.id AS employee_id,
+      employees.FullName AS employee_name,
+      employees.phone,
+      employees.ID_Number,
+      employees.email,
+      employees.department_id AS emp_department_id,
+
+      complaint_assignment.assigned_at,
+      admins.id
+
+    FROM complaint_assignment
+    JOIN complaints ON complaint_assignment.complaint_id = complaints.id
+    JOIN employees ON complaint_assignment.employee_id = employees.id
+    JOIN admins ON complaint_assignment.assigned_by_admin_id = admins.id
+    WHERE employees.id = ?
+      AND complaints.is_deleted_by_admin = 0
+    ORDER BY complaints.created_at DESC
+  `, [employeeId]);
+
+  return results;
+}
+
 
 
 

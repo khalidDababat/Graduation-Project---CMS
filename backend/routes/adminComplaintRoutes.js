@@ -8,11 +8,6 @@ router.post('/filter-by-date', adminComplaintController.getFilteredComplaints);/
 router.post('/filter-complaints', adminComplaintController.filteredComplaints);// done
 
 router.get('/dropdown-data', adminComplaintController.getDropdownData);//done
-router.get('/view-image/:imageName', adminComplaintController.viewComplaintImage);//done
-router.get('/download-image/:imageName', adminComplaintController.downloadComplaintImage);//done
-router.get('/complaint/:id', adminComplaintController.getComplaintDetails);//done
-
-router.delete('/deleteComplaint/:id', adminComplaintController.deleteComplaintbyadmin);//done
 
 router.put('/updateStatus', adminComplaintController.updateStatus);//done
 
@@ -28,7 +23,10 @@ router.post('/returnComplaint', adminComplaintController.returnComplaint);//Done
 router.get('/incomingComplaints', adminComplaintController.getIncoming);//done
 router.get('/outgoingComplaints', adminComplaintController.getOutgoing);//done
 
-
+router.get('/view-image/:imageName', adminComplaintController.viewComplaintImage);//done
+router.get('/download-image/:imageName', adminComplaintController.downloadComplaintImage);//done
+router.get('/complaint/:id', adminComplaintController.getComplaintDetails);//done
+router.delete('/deleteComplaint/:id', adminComplaintController.deleteComplaintbyadmin);//done
 
 
 

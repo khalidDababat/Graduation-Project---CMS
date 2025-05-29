@@ -6,6 +6,7 @@ const { login,requestLogin,verifyToken,verifyJWTToken  } = require('../controlle
 router.post('/login', login); //Done
 router.post('/request-login', requestLogin);//Done
 router.post('/verify-token', verifyToken);// magic link
+
 router.post('/verify-jwt', verifyJWTToken);// new: jwt verification
 
 module.exports = router;
