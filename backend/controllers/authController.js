@@ -117,14 +117,22 @@ const requestLogin = async (req, res) => {
 
     await storeLoginToken(email, role, token, expiresAt);
 
-    const magicLink = `http://localhost:3000/magic-login?token=${token}`;
+    const magicLink = `http://localhost:3000/magic-login?token=${token}&role=${role}`;
+
+// html: `<p>Click below to login:</p><a href="${magicLink}">${magicLink}</a>`
 
     const mailOptions = {
       from: process.env.MAIL_USER,
       to: email,
       subject: 'Forget Login Link',
-      html: `<p>Click below to login:</p><a href="${magicLink}">${magicLink}</a>`,
+      html: `<p>لقد طلبت إعادة تعيين كلمة المرور الخاصة بك.</p>
+        <p>اضغط على الرابط التالي لتعيين كلمة مرور جديدة:</p>
+        <a href="${magicLink}">${magicLink}إعادة تعيين</a>
+        <p>إذا لم تطلب هذا الطلب، تجاهل الرسالة.</p>`,
     };
+
+
+
 
     await sendEmail(email, 'Forget Login Link', `<p>Click below to login:</p><a href="${magicLink}">${magicLink}</a>`);
 
