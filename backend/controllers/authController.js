@@ -127,14 +127,14 @@ const requestLogin = async (req, res) => {
       subject: 'Forget Login Link',
       html: `<p>لقد طلبت إعادة تعيين كلمة المرور الخاصة بك.</p>
         <p>اضغط على الرابط التالي لتعيين كلمة مرور جديدة:</p>
-        <a href="${magicLink}">${magicLink}إعادة تعيين</a>
+        <a href="${magicLink}">إعادة تعيين</a>
         <p>إذا لم تطلب هذا الطلب، تجاهل الرسالة.</p>`,
     };
 
 
 
 
-    await sendEmail(email, 'Forget Login Link', `<p>Click below to login:</p><a href="${magicLink}">${magicLink}</a>`);
+    await sendEmail(email, 'Forget Login Link',mailOptions.html );
 
 
     return res.status(200).json({ message: 'Login link sent to your email.' });
@@ -158,7 +158,23 @@ const verifyToken = async (req, res) => {
 
     await deleteLoginToken(token);
 
-    res.status(200).json({ message: 'Login successful', email: user.email, role: user.role });
+     //  إصدار JWT مؤقت فقط لتغيير كلمة المرور
+    const jwtToken = jwt.sign(
+      { id: user.id, email: user.email, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '15m' } // short time
+    );
+
+    res.status(200).json({
+      message: 'Token verified. You can now reset your password.',
+      token: jwtToken,
+      user: {
+        email: user.email,
+        role: user.role,
+        id: user.id
+      }
+    });
+
   } catch (err) {
     console.error('Error in verifyToken:', err);
     return res.status(500).json({ message: 'Internal Server Error', error: err.message });
