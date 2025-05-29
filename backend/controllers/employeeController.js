@@ -71,10 +71,14 @@ async function EmployeesById(req, res) {
 }
 
 const updateEmployeeSettings = async (req, res) => {
+
+  // console.log('🔧 updateEmployeeSettings route called');
   try {
     const {  password, confirmPassword } = req.body;
     const role = req.user.role;
     const ID_Number = req.user.ID_Number;
+    // console.log('Decoded JWT:', req.user);
+   
 
      if (role !== 'employee') {
       return res.status(403).json({ message: 'Only employees can update their password.' });
@@ -90,6 +94,7 @@ const updateEmployeeSettings = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     await employeeModel.updateEmployeePasswordByIDNumber (ID_Number, hashedPassword);
+    
 
     return res.status(200).json({ message: 'Password updated successfully.' });
   } catch (err) {

@@ -201,6 +201,26 @@ exports.getOutgoingComplaints = async (type, user_id) => {
     );
 };
 
+exports.getComplaintsByCitizenIDNumber =async (ID_Number) => {
+  const query = `
+    SELECT 
+      users.full_name, users.ID_number, users.phone, users.email,
+      complaints.id AS complaint_id, complaints.title, complaints.description, 
+      complaints.department_id, complaints.status, complaints.image_path,
+      complaints.created_at, complaints.Note
+    FROM complaints
+    INNER JOIN users ON complaints.user_id = users.id
+    WHERE users.ID_number = ? AND complaints.is_deleted_by_admin = FALSE
+    ORDER BY complaints.created_at DESC
+  `;
+  const [rows] = await db.query(query, [ID_Number]);
+  // console.log("rows ",rows)
+  return rows;
+  
+
+  
+};
+
 
 
 

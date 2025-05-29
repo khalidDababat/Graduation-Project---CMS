@@ -9,6 +9,9 @@ router.get('/', employeeController.getEmployees);
 //added employee
 router.post('/', employeeController.addEmployee);
 
+// post/api/employee/update-settings
+router.put('/update-settings', verifyToken, employeeController.updateEmployeeSettings);
+
 //update employee
 router.put('/:id', employeeController.updateEmployee);
 
@@ -16,10 +19,5 @@ router.put('/:id', employeeController.updateEmployee);
 router.delete('/:id', employeeController.deleteEmployee);
 
 router.get('/:id', employeeController.EmployeesById);
-
-// post/api/employee/update-settings
-router.put('/update-settings', verifyToken, employeeController.updateEmployeeSettings);
-
-
 
 module.exports = router;
