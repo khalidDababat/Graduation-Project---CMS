@@ -19,7 +19,7 @@ const findUserByEmail = async (email, role) => {
   return results;
 };
 
-const storeLoginToken = async (email, role, token, expiresAt) => {
+const storeLoginToken = async (email, role, token, expiresAt,user_Id) => {
   const query = `INSERT INTO login_tokens (email, role, token, expires_at) VALUES (?, ?, ?, ?)`;
   await db.query(query, [email, role, token, expiresAt]);
 };
@@ -38,6 +38,8 @@ const updateUserPassword = async (userId, hashedPassword, role) => {
   const table = role === 'admin' ? 'admins' : 'employees';
   const query = `UPDATE ${table} SET password = ? WHERE id = ?`;
   await db.query(query, [hashedPassword, userId]);
+  // console.log('Updating password for', userId, 'with role', role, 'to:', hashedPassword);
+
 };
 module.exports = {
   findAdminByUsername,

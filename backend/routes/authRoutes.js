@@ -4,9 +4,9 @@ const { login,verifyJWTToken,requestLogin, verifyToken, resetPassword  } = requi
 
 // authController
 router.post('/login', login); //Done
-router.post('/request-login', requestLogin);
-router.post('/verify-token', verifyToken);
-router.post('/reset-password', resetPassword);
+router.post('/request-login', requestLogin);//Done
+router.post('/verify-token', verifyToken); //Done
+router.post('/reset-password', resetPassword);//Done
 
 router.post('/verify-jwt', verifyJWTToken);// new: jwt verification
 

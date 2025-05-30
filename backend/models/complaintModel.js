@@ -45,7 +45,9 @@ exports.getComplaintDetails = async (complaintId) => {
       SELECT 
         c.id AS complaint_id,
         c.title,
+        u.full_name,
         u.phone,
+        u.ID_number,
         c.description,
         c.status,
         c.created_at,

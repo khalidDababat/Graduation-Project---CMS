@@ -17,7 +17,8 @@ const { sendEmail } = require('../services/mailService');
 exports.login = async (req, res) => {
   const { role } = req.body;
 
-  if (!role) return res.status(400).json({ message: 'Role is required.' });
+  if (!role) 
+      return res.status(400).json({ message: 'Role is required.' });
 
   try {
     if (role === 'admin') {
@@ -26,19 +27,23 @@ exports.login = async (req, res) => {
         return res.status(400).json({ message: 'Username and password are required for admin.' });
 
       
-      console.log("user ",password);
+      
       const results = await findAdminByUsername(username);
-      if (results.length === 0)
+      if (results.length === 0){
         return res.status(401).json({ message: 'Invalid admin credentials.' });
-
+      }
       const admin = results[0];
+
      
-      console.log("DB ",admin.password);
+      // console.log("user ", password);
+      // console.log("DB ", admin.password);
       // const hashedPassword = await bcrypt.hash(password, 10);
-      // console.log(hashedPassword);
+
+      // console.log("hashedPassword ", hashedPassword);
+
       const isMatch = await bcrypt.compare(password, admin.password);
       console.log(isMatch)
-      //  console.log(password);
+      
       if (!isMatch)
         return res.status(401).json({ message: 'Invalid admin credentials.' });
 
@@ -115,8 +120,11 @@ exports.requestLogin = async (req, res) => {
     if (!email || !role) return res.status(400).json({ message: 'Email and role are required.' });
 
     const user = await findUserByEmail(email, role);
-    if (user.length === 0) return res.status(404).json({ message: 'User not found.' });
-
+    if (user.length === 0) {
+      return res.status(404).json({ message: 'User not found.' });
+     }
+    //  const user_Id = user[0].id;
+     
     const token = uuidv4();
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
@@ -139,20 +147,31 @@ exports.requestLogin = async (req, res) => {
   }
 };
 
+
 exports.verifyToken = async (req, res) => {
   try {
     const { token } = req.body;
     if (!token) return res.status(400).json({ message: 'Token is required.' });
 
     const result = await verifyLoginToken(token);
-    if (result.length === 0) return res.status(400).json({ message: 'Invalid or expired token.' });
+    if (result.length === 0) {
+      return res.status(400).json({ message: 'Invalid or expired token.' });
+    }
+    const tokenData = result[0];
+    const { email, role } = tokenData;
 
-    const user = result[0];
+    
+    const userResults = await findUserByEmail(email, role);
+
+    if (userResults.length === 0) {
+      return res.status(404).json({ message: 'User not found.' });
+    }
+    const user = userResults[0];
 
     await deleteLoginToken(token);
 
     const jwtToken = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
+      { id: user.id, email: user.email, role },
       process.env.JWT_SECRET,
       { expiresIn: '15m' }
     );
@@ -163,15 +182,50 @@ exports.verifyToken = async (req, res) => {
       user: {
         id: user.id,
         email: user.email,
-        role: user.role
+        role
       }
     });
-
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+// exports.verifyToken = async (req, res) => {
+//   try {
+//     const { token } = req.body;
+//     if (!token) return res.status(400).json({ message: 'Token is required.' });
+
+//     const result = await verifyLoginToken(token);
+//     if (result.length === 0) {
+//       return res.status(400).json({ message: 'Invalid or expired token.' });
+//     }
+//     const user = result[0];
+//     // const userId = user.user_Id;
+
+//     await deleteLoginToken(token);
+
+//     const jwtToken = jwt.sign(
+//       { id: user.user_Id, email: user.email, role: user.role },
+//       process.env.JWT_SECRET,
+//       { expiresIn: '15m' }
+//     );
+
+//     res.status(200).json({
+//       message: 'Token verified.',
+//       token: jwtToken,
+//       user: {
+//         id: user.id,
+//         email: user.email,
+//         role: user.role
+//       }
+//     });
+
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// };
 
 exports.resetPassword = async (req, res) => {
   try {
