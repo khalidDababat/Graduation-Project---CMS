@@ -9,11 +9,12 @@ const {
   storeLoginToken,
   verifyLoginToken,
   deleteLoginToken,
+  updateUserPassword,
 } = require('../models/authModel');
 const { sendEmail } = require('../services/mailService');
 
 
-const login = async (req, res) => {
+exports.login = async (req, res) => {
   const { role } = req.body;
 
   if (!role) return res.status(400).json({ message: 'Role is required.' });
@@ -31,6 +32,7 @@ const login = async (req, res) => {
       const admin = results[0];
 
       const isMatch = await bcrypt.compare(password, admin.password);
+      console.log(isMatch)
       if (!isMatch)
         return res.status(401).json({ message: 'Invalid admin credentials.' });
 
@@ -89,7 +91,7 @@ const login = async (req, res) => {
   }
 };
 
-const verifyJWTToken = (req, res) => {
+exports.verifyJWTToken = (req, res) => {
   const { token } = req.body;
   if (!token) return res.status(400).json({ message: 'Token is required' });
 
@@ -101,90 +103,91 @@ const verifyJWTToken = (req, res) => {
   }
 };
 
-
-const requestLogin = async (req, res) => {
+exports.requestLogin = async (req, res) => {
   try {
     const { email, role } = req.body;
-    if (!email || !role)
-      return res.status(400).json({ message: 'Email and role are required.' });
+    if (!email || !role) return res.status(400).json({ message: 'Email and role are required.' });
 
-    const results = await findUserByEmail(email, role);
-    if (results.length === 0)
-      return res.status(404).json({ message: 'User not found.' });
+    const user = await findUserByEmail(email, role);
+    if (user.length === 0) return res.status(404).json({ message: 'User not found.' });
 
     const token = uuidv4();
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);// 10 min
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
     await storeLoginToken(email, role, token, expiresAt);
 
-    const magicLink = `http://localhost:3000/magic-login?token=${token}&role=${role}`;
+    const link = `http://localhost:3000/magic-login?token=${token}&role=${role}`;
+    const html = `
+      <p>لقد طلبت إعادة تعيين كلمة المرور.</p>
+      <p>اضغط على الرابط التالي:</p>
+      <a href="${link}">إعادة تعيين كلمة المرور</a>
+      <p>إذا لم تطلب ذلك، تجاهل الرسالة.</p>
+    `;
 
-// html: `<p>Click below to login:</p><a href="${magicLink}">${magicLink}</a>`
+    await sendEmail(email, 'رابط إعادة تعيين كلمة المرور', html);
+    res.status(200).json({ message: 'Reset link sent to your email.' });
 
-    const mailOptions = {
-      from: process.env.MAIL_USER,
-      to: email,
-      subject: 'Forget Login Link',
-      html: `<p>لقد طلبت إعادة تعيين كلمة المرور الخاصة بك.</p>
-        <p>اضغط على الرابط التالي لتعيين كلمة مرور جديدة:</p>
-        <a href="${magicLink}">إعادة تعيين</a>
-        <p>إذا لم تطلب هذا الطلب، تجاهل الرسالة.</p>`,
-    };
-
-
-
-
-    await sendEmail(email, 'Forget Login Link',mailOptions.html );
-
-
-    return res.status(200).json({ message: 'Login link sent to your email.' });
   } catch (err) {
-    console.error('Error in requestLogin:', err);
-    return res.status(500).json({ message: 'Internal Server Error', error: err.message });
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
-const verifyToken = async (req, res) => {
+exports.verifyToken = async (req, res) => {
   try {
     const { token } = req.body;
     if (!token) return res.status(400).json({ message: 'Token is required.' });
 
-    const results = await verifyLoginToken(token);
-    if (results.length === 0) {
-      return res.status(400).json({ message: 'Invalid or expired token.' });
-    }
+    const result = await verifyLoginToken(token);
+    if (result.length === 0) return res.status(400).json({ message: 'Invalid or expired token.' });
 
-    const user = results[0];
+    const user = result[0];
 
     await deleteLoginToken(token);
 
-     //  إصدار JWT مؤقت فقط لتغيير كلمة المرور
     const jwtToken = jwt.sign(
       { id: user.id, email: user.email, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: '15m' } // short time
+      { expiresIn: '15m' }
     );
 
     res.status(200).json({
-      message: 'Token verified. You can now reset your password.',
+      message: 'Token verified.',
       token: jwtToken,
       user: {
+        id: user.id,
         email: user.email,
-        role: user.role,
-        id: user.id
+        role: user.role
       }
     });
 
   } catch (err) {
-    console.error('Error in verifyToken:', err);
-    return res.status(500).json({ message: 'Internal Server Error', error: err.message });
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
+exports.resetPassword = async (req, res) => {
+  try {
+    const { password, confirmPassword, userId, role, token } = req.body;
+    if (!password || !confirmPassword || !userId || !role || !token)
+      return res.status(400).json({ message: 'All fields are required.' });
 
-module.exports = {
-  login,
-  requestLogin,
-  verifyToken,
-  verifyJWTToken,
+    if (password !== confirmPassword)
+      return res.status(400).json({ message: 'Passwords do not match.' });
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    if (decoded.id != userId || decoded.role !== role)
+      return res.status(401).json({ message: 'Invalid token.' });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await updateUserPassword(userId, hashedPassword, role);
+
+    res.status(200).json({ message: 'Password reset successfully.' });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
 };
+

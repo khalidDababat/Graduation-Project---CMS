@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { login,requestLogin,verifyToken,verifyJWTToken  } = require('../controllers/authController');
+const { login,verifyJWTToken,requestLogin, verifyToken, resetPassword  } = require('../controllers/authController');
 
 // authController
 router.post('/login', login); //Done
-router.post('/request-login', requestLogin);//Done
-router.post('/verify-token', verifyToken);// magic link
+router.post('/request-login', requestLogin);
+router.post('/verify-token', verifyToken);
+router.post('/reset-password', resetPassword);
 
 router.post('/verify-jwt', verifyJWTToken);// new: jwt verification
 
