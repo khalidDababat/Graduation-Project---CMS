@@ -1,6 +1,11 @@
 import React, { Fragment, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 const ForgotePassword = () => {
+  const location = useLocation();
+  const role = location.state?.role || "";
+  // console.log("Role passed from login page:", role);
+
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -8,24 +13,22 @@ const ForgotePassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    setMessage("");
-    setError("");
-
     if (!email) {
       setError("يرجى إدخال البريد الإلكتروني");
-      return; 
+      return;
     }
+        
+   
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/forgot-password",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email }),
-        }
-      );
+      const res = await fetch("http://localhost:5000/api/request-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, role }),
+      });
 
       if (!res.ok) {
+        setError("البريد الإلكتروني غير موجود ");
         throw new Error("البريد الإلكتروني غير موجود");
       }
 
@@ -58,7 +61,7 @@ const ForgotePassword = () => {
           />
 
           <button type="submit" className="btn btn-primary w-100">
-                      إرسال رابط تعيين كلمة السر 
+            إرسال رابط تعيين كلمة السر
           </button>
         </form>
       </div>

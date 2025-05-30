@@ -1,10 +1,8 @@
 import React, { Fragment, useEffect, useState } from "react";
 import styles from "./AdminDashboard.module.css";
 import logo_image from "../../Assets/Logo_image.jpg";
-import { FaBars, FaUser, FaBell, FaImage, FaEdit } from "react-icons/fa";
-import { Link } from "react-router-dom";
-
-import { useNavigate } from "react-router-dom";
+import { FaImage } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../utils/PrivateRoutes";
 
 import HeaderAdmin from "./HeaderAdmin";
@@ -18,52 +16,52 @@ const AdminDashboard = () => {
     navigate("/loginAdmin");
   };
 
-
   const [complaints, setComplaints] = useState([]);
+  const [departments, setDepartments] = useState([]);
+
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
-   
-  useEffect( () =>{
-        
-    const fetchComplaint = async() =>{
-       
-      try{
-          
-        const res = await fetch("http://localhost:5000/api/admin/viewComplaintInfo");
-        
+  const [massege, setmassege] = useState("");
 
-
+  useEffect(() => {
+    const fetchComplaint = async () => {
+      try {
+        const res = await fetch(
+          "http://localhost:5000/api/admin/viewComplaintInfo"
+        );
         if (!res.ok) {
           console.error("HTTP error", res.status);
           return;
         }
-        const data = await res.json(); 
-
-        
-        
-       const setOFComplaints =data.complaints || data.data; 
-       if(Array.isArray(setOFComplaints)){
-        setComplaints(setOFComplaints);
-       }else{
-        console.log("لا يوجد شكاوي متقدمه ");
-        setComplaints([]);
-       }
-
-
-
-      }catch(error){
-          console.log(error);
+        const data = await res.json();
+        const setOFComplaints = data.complaints || data.data;
+        if (Array.isArray(setOFComplaints) && setOFComplaints.length > 0) {
+          setComplaints(setOFComplaints);
+        } else {
+          // console.log("لا يوجد شكاوي متقدمه ");
+          setComplaints([]);
+          setmassege("لا يوجد شكاوي متقدمة ");
+          setTimeout(() => {
+            setmassege("");
+          }, 5000);
+        }
+      } catch (error) {
+        console.log(error);
       }
-
-
     };
-     
-    fetchComplaint(); 
-  },[])
+    fetchComplaint();
+  }, []);
 
-
-
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      const res = await fetch("http://localhost:5000/api/admin/dropdown-data");
+      const data = await res.json();
+      // console.log("Thedepartment data ",data.departments);
+      setDepartments(data.departments);
+    };
+    fetchDepartments();
+  }, []);
 
   const filteredComplaints = complaints.filter((c) => {
     if (!startDate || !endDate) return true;
@@ -72,117 +70,87 @@ const AdminDashboard = () => {
       complaintDate >= new Date(startDate) && complaintDate <= new Date(endDate)
     );
   });
- 
 
   const openComplaintDetails = (id) => {
-    navigate(`/editComplaint/${id}`);
+    navigate(`/EditComplaint/${id}`);
   };
 
   return (
     <Fragment>
-      {/* <header className={styles.header_Admin}>
-        <div className="d-flex">
-          <div className={styles.logo}>
-            <img src={logo_image} className={styles.logoImage} alt="logo" />
-          </div>
-          <h4 className="mt-4">لوحة تحكم المسؤول - بلدية عنبتا</h4>
-        </div>
-
-        <div className="d-flex ">
-          <form action="">
-            <button type="button" className={styles.btn_user} id="btn_user">
-              <FaUser size={25} />
-              <span className="m-1">{user?.username}</span>
-            </button>
-          </form>
-        </div>
-      </header> */}
-
       <div>
         <HeaderAdmin />
       </div>
 
+      {massege && (
+        <div
+          className={`alert alert-danger text-center mp-3 ${styles.massege}`}
+        >
+          {massege}
+        </div>
+      )}
+
       <div className={styles.conteant_page}>
-        <div>
-          <div className={styles.side_lists}>
-            <ul>
-              <li>
-                <Link to="/AdminDashboard">قائمة الشكاوي </Link>
-              </li>
-              <li>
-                <Link to="/EmployeeMangment">إدارة الموظفين</Link>
-              </li>
-              <li>
-                <Link to="/ComplaintsIssuedAdmin">الشكاوي الصادرة</Link>
+        {/* Sidebar */}
+        <div className={styles.side_lists}>
+          <ul>
+            <li>
+              <Link to="/AdminDashboard">قائمة الشكاوي</Link>
+            </li>
+            <li>
+              <Link to="/EmployeeMangment">إدارة الموظفين</Link>
+            </li>
+            <li>
+              <Link to="/ComplaintsIssuedAdmin">
+                الشكاوي الصادرة{" "}
                 <span className={styles.notify_complaint}>0</span>
-              </li>
-              <li>
-                <Link to="/ComplaintsReceivedAdmin">الشكاوي الواردة </Link>
+              </Link>
+            </li>
+            <li>
+              <Link to="/ComplaintsReceivedAdmin">
+                الشكاوي الواردة{" "}
                 <span className={styles.notify_complaint}>0</span>
-              </li>
-              {/* <li>
-                <Link to="/ChangePassword">تغيير كلمة السر</Link>
-              </li> */}
-              <li>
-                <button
-                  onClick={handelLogout}
-                  className="btn btn-danger w-100 mt-2"
-                >
-                  تسجيل الخروج
-                </button>
-              </li>
-            </ul>
-          </div>
+              </Link>
+            </li>
+            <li>
+              <button
+                onClick={handelLogout}
+                className="btn btn-danger w-100 mt-2"
+              >
+                تسجيل الخروج
+              </button>
+            </li>
+          </ul>
         </div>
 
-        {/* secound Coulmn  */}
+        {/* Main content */}
+        <div className="bg-light ">
+          {/* Date filter */}
 
-        {/* <div className="bg-light">
-          <div className={styles.DashBourd}>
-            <div>
-              <p>إجمالي الشكاوي</p>
-              <span>0</span>
-            </div>
-
-            <div>
-              <p>الشكاوي النشطة</p>
-              <span>0</span>
-            </div>
-          </div>
-
-          <br />
-          <div className={styles.search_Complint}>
-            <form action="">
-              <input
-                type="search"
-                name=""
-                placeholder="بحث عن الشكوى حسب إسم الموظف، موضوع الشكوى ،الوصف "
-                className=""
-              />
-            </form>
-          </div>
-        </div> */}
-
-        <div className="bg-light w-100 p-3">
-          <div className="d-flex gap-3 align-items-center">
-            <label>من:</label>
+          <div className={`d-flex gap-3 align-items-center m-4`}>
+            <label htmlFor="startDate">من:</label>
             <input
+              id="startDate"
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
             />
-            <label>إلى:</label>
+            <label htmlFor="endDate">إلى:</label>
             <input
+              id="endDate"
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
             />
             <button className="btn btn-primary">فلترة</button>
-
-            
           </div>
 
-          <div className="row mt-4 ">
+          {/* Complaints cards */}
+          <div className="row m-4">
+            {filteredComplaints.length === 0 && (
+              <p className="text-center mt-5">
+                لا توجد شكاوى في هذا النطاق الزمني
+              </p>
+            )}
             {filteredComplaints.map((complaint) => (
               <div key={complaint.id} className="col-md-6 col-lg-4 mb-4">
                 <div
@@ -196,16 +164,27 @@ const AdminDashboard = () => {
                       {complaint.description.slice(0, 50)}...
                     </p>
                     <p>
+                      <strong>رقم هوية المواطن :</strong>{" "}
+                      {complaint.employee || "غير مسند"}
+                    </p>
+
+                    <p>
                       <strong>الموظف:</strong>{" "}
                       {complaint.employee || "غير مسند"}
                     </p>
                     <p>
-                      <strong>الدائرة:</strong> {complaint.department_id}
+                      <strong>الدائرة:</strong>
+                      {departments.find((d) => d.id === complaint.department_id)
+                        ?.name || "غير معروف"}
                     </p>
+
                     <p>
-                      <strong> تاريخ الإنشاء</strong>{" "} 
-                      { new Date(complaint.created_at).toISOString().split("T")[0]}
-                      
+                      <strong>تاريخ الإنشاء:</strong>{" "}
+                      {
+                        new Date(complaint.created_at)
+                          .toISOString()
+                          .split("T")[0]
+                      }
                     </p>
                     <p>
                       <strong>الحالة:</strong>{" "}
@@ -221,16 +200,17 @@ const AdminDashboard = () => {
               </div>
             ))}
           </div>
-
-          {filteredComplaints.length === 0 && (
-            <p className="text-center mt-5">
-              لا توجد شكاوى في هذا النطاق الزمني
-            </p>
-          )}
         </div>
       </div>
 
-      <footer></footer>
+      {/* Footer */}
+      <footer className="footer bg-white text-center py-3 border-top mt-5">
+        <div className="container">
+          <p className="mb-0 text-muted">
+            جميع الحقوق محفوظة ©2025. نظام إدارة الشكاوي لبلدية عنبتا
+          </p>
+        </div>
+      </footer>
     </Fragment>
   );
 };

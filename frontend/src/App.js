@@ -13,18 +13,23 @@ import ProtectedRoute from "./routes/ProtectedRoute.js";
 import { EmployeeProvider } from "./utils/EmployeeContext.js";
 
 import ForgetPassword from "./pages/ForgotePassword.jsx";
-import ChangePassword from "./pages/ChangePassword.jsx";
+import AdminSettings from "./Components/AdminDashboard/AdminSettings.jsx";
 
 import FooterPart from "./Components/FooterPart/FooterPart.jsx";
 import HeaderPart from "./Components/HeaderPart/Header.jsx";
 
+import EditComplaint from "./Components/AdminDashboard/EditComplaint.jsx"
 import ComplaintsIssuedAdmin from "./Components/AdminDashboard/ComplaintsIssuedAdmin.jsx";
 import ComplaintsReceivedAdmin from "./Components/AdminDashboard/ComplaintsReceivedAdmin.jsx";
+
+
+// import MagicLoginHandler from "./pages/MagicLoginHandler.jsx"
+
 
 function App() {
   return (
     <div className="App">
-      <Router>
+      
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/create-complaint" element={<ComplaintForm />} />
@@ -32,11 +37,16 @@ function App() {
           <Route path="/ForgetPassword" element={<ForgetPassword />} />
           <Route path="/Complaint_Track" element={<ComplaintTrack />} />
 
+          {/* <Route path="/magic-login" element={<MagicLoginHandler/>}/> */}
+          
+
+
           <Route
             path="/AdminDashboard"
             element={
               <ProtectedRoute>
-                <AdminDashboard />
+                <AdminDashboard/>
+               
               </ProtectedRoute>
             }
           />
@@ -45,6 +55,7 @@ function App() {
             element={
               <ProtectedRoute>
                 <ComplaintsIssuedAdmin />
+
               </ProtectedRoute>
             }
           />
@@ -55,12 +66,21 @@ function App() {
                 <ComplaintsReceivedAdmin />
               </ProtectedRoute>
             }
+          /> 
+           <Route 
+             path="/EditComplaint/:id" 
+             element={
+              <ProtectedRoute>
+                <EditComplaint/>
+              </ProtectedRoute>
+             }
           />
+
           <Route
-            path="/ChangePassword"
+            path="/AdminSettings"
             element={
               <ProtectedRoute>
-                <ChangePassword />
+                <AdminSettings />
               </ProtectedRoute>
             }
           />
@@ -88,7 +108,8 @@ function App() {
 
           <Route path="/HeaderPart" element={<HeaderPart />} />
         </Routes>
-      </Router>
+       
+      
     </div>
   );
 }

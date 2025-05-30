@@ -7,20 +7,24 @@ const AuthContext =createContext();
     
     const [user ,setUser] = useState(null);  // user = {username ="Admin"}
     
-    useEffect(() =>{
-      const storedUser =localStorage.getItem("user"); 
-      if(storedUser){
-          setUser(JSON.parse(storedUser));   
-      }
-    },[])
+    // useEffect(() =>{
+    //   const storedUser =localStorage.getItem("user"); 
+    //   if(storedUser){
+    //       setUser(JSON.parse(storedUser));   
+    //   }
+    // },[])
 
 
-    const login = (userData) =>{
-         localStorage.setItem("user",JSON.stringify(userData));
+    const login = (userData) =>{ 
+
+      //    console.log("eeeeeeeeeee",userData);
+         localStorage.setItem("token",userData.token)
+         localStorage.setItem("user",JSON.stringify(userData.username));
          setUser(userData);  
     }
     const logOut =() =>{
         localStorage.removeItem("user");
+        localStorage.removeItem("token");
         setUser(null); 
              
     };  

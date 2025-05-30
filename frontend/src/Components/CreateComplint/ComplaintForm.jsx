@@ -243,7 +243,7 @@ const ComplaintForm = () => {
             <button type="submit">إرسال</button>
             {messageSuccess && (
               <div
-                class="alert alert-success d-flex align-items-center"
+                class="alert alert-success d-flex align-items-center mb-4"
                 role="alert"
               >
                 <BsCheckCircleFill className="me-2 text-success" size={24} />

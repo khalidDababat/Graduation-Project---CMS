@@ -28,16 +28,21 @@ const AdminLogin = () => {
 
     const res = await fetch(url, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json"
+               
+       },
       body: JSON.stringify(payload),
     });
 
     const data = await res.json();
-    // console.log(data);
+    //  console.log("What the Data from login ",data);
 
-    if (res.status === 200) { 
+    if (res.status === 200) {   
+
+      localStorage.setItem("token",data.token); 
+
       if(userType === "admin"){
-        login({username});   // save user data globally
+        login(data);   // save user data globally
         navigate("/AdminDashboard");
       }else{
         login(data);
@@ -68,7 +73,7 @@ const AdminLogin = () => {
               </div>
 
               {messageField && (
-                <div className="alert alert-danger text-center">{messageField}</div>
+                <div className="alert alert-danger text-center  ">{messageField}</div>
               )}
 
               <form onSubmit={handleLogin}>
@@ -111,7 +116,10 @@ const AdminLogin = () => {
                       <label htmlFor="adminPassword">كلمة المرور</label>
                     </div>
                     <div className="text-end mb-3">
-                      <Link to="/ForgetPassword" className="text-decoration-none">
+                      <Link to="/ForgetPassword" 
+                            className="text-decoration-none"
+                            state={{role:"admin"}}
+                            >
                         هل نسيت كلمة المرور؟
                       </Link>
                     </div>
@@ -145,7 +153,10 @@ const AdminLogin = () => {
                       <label htmlFor="employeePassword">كلمة المرور</label>
                     </div>
                     <div className="text-end mb-3">
-                      <Link to="/ForgetPassword" className="text-decoration-none">
+                      <Link to="/ForgetPassword" 
+                            className="text-decoration-none"
+                            state={{role:"employee"}}
+                            >
                         هل نسيت كلمة المرور؟
                       </Link>
                     </div>

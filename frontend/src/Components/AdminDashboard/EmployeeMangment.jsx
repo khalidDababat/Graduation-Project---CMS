@@ -142,7 +142,7 @@ const EmployeeManagement = () => {
 
       if (!res.ok) throw new Error("Failed to delete employee");
 
-      setMessageError("The employee has been removed.");
+      setMessageError("تم حذف الموظف ");
       setTimeout(() => setMessageError(""), 2000);
       fetchEmployees();
     } catch (error) {
@@ -179,11 +179,10 @@ const EmployeeManagement = () => {
           </form>
         </div>
       </header> */}
-          
-          <div>
-            <HeaderAdmin/>
-          </div>
-      
+
+      <div>
+        <HeaderAdmin />
+      </div>
 
       <div className={styles.conteant_page}>
         <div>
@@ -213,7 +212,6 @@ const EmployeeManagement = () => {
                 >
                   تسجيل الخروج
                 </button>
-
               </li>
             </ul>
           </div>
@@ -221,17 +219,6 @@ const EmployeeManagement = () => {
 
         <div className="p-4 w-100 bg-light">
           <h5 className="mb-3">إضافة / تعديل موظف</h5>
-
-          {messageSuccess && (
-            <div className="alert alert-success text-center" role="alert">
-              {messageSuccess}
-            </div>
-          )}
-          {messageError && (
-            <div className="alert alert-warning text-center" role="alert">
-              {messageError}
-            </div>
-          )}
 
           <form onSubmit={handleSubmit} className="mb-4">
             <label htmlFor="fullName">اسم الموظف</label>
@@ -334,6 +321,20 @@ const EmployeeManagement = () => {
               )}
             </div>
           </form>
+
+          {messageSuccess && (
+            <div
+              className=" alert alert-success  text-center fs-4"
+              role="alert"
+            >
+              {messageSuccess}
+            </div>
+          )}
+          {messageError && (
+            <div className=" alert alert-warning text-center fs-4" role="alert">
+              {messageError}
+            </div>
+          )}
 
           <h5>قائمة الموظفين</h5>
           <table className="table table-bordered text-center">
