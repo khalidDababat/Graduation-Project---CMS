@@ -25,14 +25,20 @@ exports.login = async (req, res) => {
       if (!username || !password)
         return res.status(400).json({ message: 'Username and password are required for admin.' });
 
+      
+      console.log("user ",password);
       const results = await findAdminByUsername(username);
       if (results.length === 0)
         return res.status(401).json({ message: 'Invalid admin credentials.' });
 
       const admin = results[0];
-
+     
+      console.log("DB ",admin.password);
+      // const hashedPassword = await bcrypt.hash(password, 10);
+      // console.log(hashedPassword);
       const isMatch = await bcrypt.compare(password, admin.password);
       console.log(isMatch)
+      //  console.log(password);
       if (!isMatch)
         return res.status(401).json({ message: 'Invalid admin credentials.' });
 
