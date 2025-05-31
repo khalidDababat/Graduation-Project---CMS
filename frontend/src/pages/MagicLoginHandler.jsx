@@ -1,14 +1,15 @@
 import { useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { useAuth } from "../utils/PrivateRoutes";
 
+import { useAuth } from "../utils/PrivateRoutes";
 const MagicLoginHandler = () => {
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
   const role = searchParams.get("role");
   const navigate = useNavigate();
-  const { login } = useAuth();
+  // const { login } = useAuth();
          
+  console.log("ttttttttt token :::",token) ;
 
 
 
@@ -20,7 +21,7 @@ const MagicLoginHandler = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ token, role }),
+          body: JSON.stringify({ token }),
         });
 
         if (!res.ok) {
@@ -29,16 +30,32 @@ const MagicLoginHandler = () => {
 
         const data = await res.json();
         
-        
-        data.token =token; 
-        
-        login(data);
+      //  console.log("sssss data ", data);
+       // data.token =token; 
+     
+      
        
 
         
-        if (data.user.role === "admin") navigate("/AdminDashboard");
-        else if (data.user.role === "employee") navigate("/EmployeePage");
-        else navigate("/");
+        if (data.user.role === "admin")
+            navigate(`/ResetPasswordAdmin` ,{
+             state:{
+              token: data.token,
+              role: data.user.role,
+              userId: data.user.id,
+             }
+            });
+            
+        else if (data.user.role === "employee") 
+          navigate(`/ResetPasswordAdmin` ,{
+            state:{
+             token: data.token,
+             role: data.user.role,
+             userId: data.user.userId,
+            }
+           });
+          
+        // else navigate("/");
 
 
 
@@ -53,7 +70,7 @@ const MagicLoginHandler = () => {
     } else {
       navigate("/");
     }
-  }, [token, login, navigate]);
+  }, [token, navigate]);
 
   return <p className="text-center mt-5">...جاري التحقق من الدخول</p>;
 };

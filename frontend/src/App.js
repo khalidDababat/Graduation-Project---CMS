@@ -15,101 +15,100 @@ import { EmployeeProvider } from "./utils/EmployeeContext.js";
 import ForgetPassword from "./pages/ForgotePassword.jsx";
 import AdminSettings from "./Components/AdminDashboard/AdminSettings.jsx";
 
+import NotFound from "./pages/NotFound.jsx";
 import FooterPart from "./Components/FooterPart/FooterPart.jsx";
 import HeaderPart from "./Components/HeaderPart/Header.jsx";
 
-import EditComplaint from "./Components/AdminDashboard/EditComplaint.jsx"
+import EditComplaint from "./Components/AdminDashboard/EditComplaint.jsx";
 import ComplaintsIssuedAdmin from "./Components/AdminDashboard/ComplaintsIssuedAdmin.jsx";
 import ComplaintsReceivedAdmin from "./Components/AdminDashboard/ComplaintsReceivedAdmin.jsx";
 
-
-// import MagicLoginHandler from "./pages/MagicLoginHandler.jsx"
-
+import MagicLoginHandler from "./pages/MagicLoginHandler.jsx"; 
+import ResetPasswordAdmin from "./pages/ResetPasswordAdmin.jsx"; 
+import ResetPasswordEmployee from "./pages/ResetPasswordEmployee.jsx"; 
 
 function App() {
   return (
     <div className="App">
-      
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/create-complaint" element={<ComplaintForm />} />
-          <Route path="/loginAdmin" element={<AdminLogin />} />
-          <Route path="/ForgetPassword" element={<ForgetPassword />} />
-          <Route path="/Complaint_Track" element={<ComplaintTrack />} />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/create-complaint" element={<ComplaintForm />} />
+        <Route path="/loginAdmin" element={<AdminLogin />} />
+        <Route path="/ForgetPassword" element={<ForgetPassword />} />
+        <Route path="/Complaint_Track" element={<ComplaintTrack />} />
+        <Route path="*" element={<NotFound />} />
 
-          {/* <Route path="/magic-login" element={<MagicLoginHandler/>}/> */}
-          
+        <Route path="/magic-login" element={<MagicLoginHandler/>}/>
+        <Route path="/ResetPasswordAdmin" element={<ResetPasswordAdmin/>}/>
+        <Route path="/ResetPasswordEmployee" element={<ResetPasswordEmployee/>}/>
 
+        <Route
+          path="/AdminDashboard"
+          element={
+            <ProtectedRoute>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ComplaintsIssuedAdmin"
+          element={
+            <ProtectedRoute>
+              <ComplaintsIssuedAdmin />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ComplaintsReceivedAdmin"
+          element={
+            <ProtectedRoute>
+              <ComplaintsReceivedAdmin />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/EditComplaint/:id"
+          element={
+            <ProtectedRoute>
+              <EmployeeProvider>
+                <EditComplaint />
+              </EmployeeProvider>
+            </ProtectedRoute>
+          }
+        />
 
-          <Route
-            path="/AdminDashboard"
-            element={
-              <ProtectedRoute>
-                <AdminDashboard/>
-               
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/ComplaintsIssuedAdmin"
-            element={
-              <ProtectedRoute>
-                <ComplaintsIssuedAdmin />
+        <Route
+          path="/AdminSettings"
+          element={
+            <ProtectedRoute>
+              <AdminSettings />
+            </ProtectedRoute>
+          }
+        />
 
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/ComplaintsReceivedAdmin"
-            element={
-              <ProtectedRoute>
-                <ComplaintsReceivedAdmin />
-              </ProtectedRoute>
-            }
-          /> 
-           <Route 
-             path="/EditComplaint/:id" 
-             element={
-              <ProtectedRoute>
-                <EditComplaint/>
-              </ProtectedRoute>
-             }
-          />
+        <Route
+          path="/EmployeePage"
+          element={
+            <ProtectedRoute>
+              <EmployeeProvider>
+                <EmployeePage />
+              </EmployeeProvider>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/EmployeeMangment"
+          element={
+            <ProtectedRoute>
+              <EmployeeProvider>
+                <EmployeeMangment />
+              </EmployeeProvider>
+            </ProtectedRoute>
+          }
+        />
 
-          <Route
-            path="/AdminSettings"
-            element={
-              <ProtectedRoute>
-                <AdminSettings />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/EmployeePage"
-            element={
-              <ProtectedRoute>
-                <EmployeeProvider>
-                  <EmployeePage />
-                </EmployeeProvider>
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/EmployeeMangment"
-            element={
-              <ProtectedRoute>
-                <EmployeeProvider>
-                  <EmployeeMangment />
-                </EmployeeProvider>
-              </ProtectedRoute>
-            }
-          />
-
-          <Route path="/HeaderPart" element={<HeaderPart />} />
-        </Routes>
-       
-      
+        <Route path="/HeaderPart" element={<HeaderPart />} />
+      </Routes>
     </div>
   );
 }
