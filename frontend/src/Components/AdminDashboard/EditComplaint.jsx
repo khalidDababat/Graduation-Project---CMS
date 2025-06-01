@@ -32,6 +32,10 @@ const EditComplaint = () => {
         setSelectedEmployee("");
         setStatus(data[0].status);
       });
+       
+      
+     
+
 
     // Fetch departments
     fetch("http://localhost:5000/api/admin/dropdown-data")
@@ -46,7 +50,7 @@ const EditComplaint = () => {
         setEmployees(data);
       });
 
-     //Fetch Citezens Info 
+      
 
 
 
@@ -117,12 +121,12 @@ const EditComplaint = () => {
 
           <div className="mb-3">
             <label>اسم المواطن:</label>
-            <input className="form-control" value="" name="name" disabled />
+            <input className="form-control" value={complaint.full_name || "غير مدخل"} name="name" disabled />
           </div>
 
           <div className="mb-3">
-            <label>رقم الجوال:</label>
-            <input className="form-control" value="" name="phone" disabled />
+            <label>رقم جوال المواطن:</label>
+            <input className="form-control" value={complaint.phone} name="phone" disabled />
           </div>
 
           <div className="mb-3">
@@ -132,7 +136,7 @@ const EditComplaint = () => {
 
           <div className="mb-3">
             <label>رقم الهوية:</label>
-            <input className="form-control" value="" disabled />
+            <input className="form-control" value={complaint.ID_number} disabled />
           </div>
 
           <div className="mb-3">
@@ -182,12 +186,14 @@ const EditComplaint = () => {
 
           {complaint.image_path && (
             <div className="mb-3">
-              <a
-                href={`http://localhost:5000/${complaint.image_path}`}
+              <a 
+
+            //http://localhost:5000/api/admin/view-image/
+                href={`http://localhost:5000/api/admin/view-image/${complaint.image_path}`}
                 rel="noopener noreferrer"
                 className="btn btn-outline-secondary"
               >
-                عرض الصورة
+                عرض الصورة الشكوى
               </a>
             </div>
           )}

@@ -121,7 +121,6 @@ const ComplaintForm = () => {
             <br />
             <input
               type="text"
-              required
               placeholder="الإسم الكامل "
               name="full_name"
               value={formData.full_name}

@@ -1,70 +1,41 @@
-import React from "react";
-import face from "../../Assets/bxl-facebook-circle.svg";
-import insta from "../../Assets/bxl-instagram.svg";
-import youtup from "../../Assets/bxl-youtube.svg";
-import styles from "./FooterPart.module.css";
-import { Link } from "react-router-dom";
+import React from 'react';
+import styles from './FooterPart.module.css';
+import { Link } from 'react-router-dom';
+import { FaPhoneAlt, FaEnvelope, FaMapMarkerAlt, FaLock } from 'react-icons/fa';
 
 const Footer = () => {
   return (
-    <footer className={styles.footer}>
-      <div className={styles.container_footer}>
-        <div className={styles.footer_item}>
-          <div className={styles.text_footer}>
-            <p>
-              يتطلع نظام إدارة الشكاوى لبلدية عنبتا إلى تقديم خدمة بلدية
-              إلكترونية فعالة، تضمن سرعة الاستجابة، ورفع جودة المتابعة، وتعزيز
-              الشفافية في معالجة الشكاوى.
-            </p> 
-            <div className={styles.social_icons}>
-               <a href="#">
-                  <img src={youtup} alt="YouTube" />
-                </a>
-                <a href="#">
-                  <img src={insta} alt="Instagram" />
-                </a>
-                <a href="#">
-                  <img src={insta} alt="Instagram" />
-                </a>
-            </div>
-          </div>
-
-          {/* <div className={styles.social_icons}>
-            <h3>تواصل معنا </h3>
-            <ul>
-              <li>
-                <a href="#">
-                  <img src={youtup} alt="YouTube" />
-                </a>
-                 <a href="#">
-                  <img src={insta} alt="Instagram" />
-                </a>
-              </li>
-              <li>
-                <a href="#">
-                  <img src={insta} alt="Instagram" />
-                </a>
-                
-              </li>
-              <li>
-                <a href="#">
-                  <img src={face} alt="Facebook" /> 
-                </a>
-               
-              </li>
-            </ul>
-          </div> */}
-
-          <div>
-            <Link className={styles.logInEmoloyees} to="/loginAdmin">
-              تسجيل دخول الموظفين
-            </Link>
-          </div>
+    <footer className={styles.footerWrapper}>
+      <div className={styles.contactSection}>
+        <div className={styles.headerRow}>
+          <h2 className={styles.title}>للتواصل معنا</h2>
+          <Link to="/loginAdmin" className={styles.loginButton}>
+            <FaLock className={styles.loginIcon} />
+            دخول الإدارة
+          </Link>
         </div>
 
-        <div className={styles.copyright_area}>
-          <p>جميع الحقوق محفوظة ©2025. نظام إدارة الشكاوي لبلدية عنبتا</p>
+        <div className={styles.contactGrid}>
+          <div className={styles.contactItem}>
+            <div className={styles.icon}><FaPhoneAlt /></div>
+            <h3>الهاتف</h3>
+            <p>09-2345678</p>
+          </div>
+          <div className={styles.contactItem}>
+            <div className={styles.icon}><FaEnvelope /></div>
+            <h3>البريد الإلكتروني</h3>
+            <p>info@anabta-municipality.ps</p>
+          </div>
+          <div className={styles.contactItem}>
+            <div className={styles.icon}><FaMapMarkerAlt /></div>
+            <h3>العنوان</h3>
+            <p>عنبتا - محافظة طولكرم</p>
+          </div>
         </div>
+      </div>
+
+      <div className={styles.bottomBar}>
+        <p>© 2025 بلدية عنبتا. جميع الحقوق محفوظة.</p>
       </div>
     </footer>
   );

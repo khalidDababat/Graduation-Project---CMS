@@ -34,7 +34,8 @@ const AdminDashboard = () => {
           console.error("HTTP error", res.status);
           return;
         }
-        const data = await res.json();
+        const data = await res.json(); 
+        
         const setOFComplaints = data.complaints || data.data;
         if (Array.isArray(setOFComplaints) && setOFComplaints.length > 0) {
           setComplaints(setOFComplaints);
@@ -64,11 +65,29 @@ const AdminDashboard = () => {
   }, []);
 
   const filteredComplaints = complaints.filter((c) => {
+    const localDate = new Date(c.created_at).toLocaleDateString("en-GB", {
+      timeZone: "Asia/Hebron",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+
     if (!startDate || !endDate) return true;
-    const complaintDate = new Date(c.created_at);
-    return (
-      complaintDate >= new Date(startDate) && complaintDate <= new Date(endDate)
+
+    const complaintDate = new Date(
+      new Date(c.created_at).toLocaleString("en-US", {
+        timeZone: "Asia/Hebron",
+      })
     );
+    const start = new Date(
+      new Date(startDate).toLocaleString("en-US", { timeZone: "Asia/Hebron" })
+    );
+    const end = new Date(
+      new Date(endDate).toLocaleString("en-US", { timeZone: "Asia/Hebron" })
+    );
+
+
+    return complaintDate >= start && complaintDate <= end;
   });
 
   const openComplaintDetails = (id) => {
@@ -152,6 +171,7 @@ const AdminDashboard = () => {
               </p>
             )}
             {filteredComplaints.map((complaint) => (
+              
               <div key={complaint.id} className="col-md-6 col-lg-4 mb-4">
                 <div
                   className="card shadow-sm h-100"
@@ -161,12 +181,13 @@ const AdminDashboard = () => {
                   <div className="card-body">
                     <h5 className="card-title">{complaint.title}</h5>
                     <p className="card-text text-muted">
-                      {complaint.description.slice(0, 50)}...
+                      {complaint.description.slice(0, 100)}...
                     </p>
-                    <p>
-                      <strong>رقم هوية المواطن :</strong>{" "}
-                      {complaint.employee || "غير مسند"}
-                    </p>
+                    {/* <p>
+                      <strong>رقم هاتف المواطن: </strong>{" "}
+                      {complaint.phone}
+                     
+                    </p> */}
 
                     <p>
                       <strong>الموظف:</strong>{" "}
@@ -180,21 +201,25 @@ const AdminDashboard = () => {
 
                     <p>
                       <strong>تاريخ الإنشاء:</strong>{" "}
-                      {
-                        new Date(complaint.created_at)
-                          .toISOString()
-                          .split("T")[0]
-                      }
+                      {new Date(complaint.created_at).toLocaleDateString(
+                        "en-GB",
+                        {
+                          timeZone: "Asia/Hebron",
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        }
+                      )}
                     </p>
                     <p>
                       <strong>الحالة:</strong>{" "}
                       <span className="badge bg-info">{complaint.status}</span>
                     </p>
-                    {complaint.image_path && (
+                    {/* {complaint.image_path && (
                       <button className="btn btn-sm btn-outline-secondary mt-2">
                         <FaImage /> عرض الصورة
                       </button>
-                    )}
+                    )} */}
                   </div>
                 </div>
               </div>

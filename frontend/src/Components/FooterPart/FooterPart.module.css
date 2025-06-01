@@ -1,91 +1,89 @@
-/* body {
-  padding: 0px;
-  box-sizing: border-box;
-  margin: 0px;
-  overflow-x: hidden; 
- 
-} */
-
-.footer {
-  background-color: #181818;
-  height: 350px;
-  width: 100%;
-  /* margin-top: 20px; */
-  position: relative;
-}
-
-.copyright_area {
-  position: absolute;
-}
-
-.footer_item {
-  width: 100%;
-  height: 270px;
-  padding: 15px 10px;
+.footerWrapper {
   background-color: #577E73;
-
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-
-  font-size: 19px; 
-  color: white;
-}
-.text_footer {
-  width: 100%;
-  height: 200px;
-  padding: 2px 10px;
-}
-
-
-
-.logInEmoloyees {
-  text-decoration: none;
-  padding: 10px;
-  position: absolute;
-  top: 20px;
-  left: 220px;
-  color: black;
-  font-size: 19px;
-  color: white; 
- 
-
-}
-
-.logInEmoloyees:hover {
-  text-decoration: underline;
-}
-
-.copyright_area p {
-  color: white;
+  color: #fff;
   text-align: center;
-  padding: 10px;
+  direction: rtl;
+}
+
+.contactSection {
+  padding: 3rem 1rem 2rem;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  direction: rtl;
+  padding: 0 1rem;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 1.5rem;
   font-weight: bold;
-  font-size: 17px;
+  margin: 0;
 }
 
-.copyright_area {
-  width: 99%;
-  padding: 10px;
-  background-color: #202020;
-  bottom: 0px;
-}
-.social_icons {
-  padding: 2px 10px;
-  margin: 5px 0px;
-}
-.social_icons h3 {
-  margin: 0px 60px 10px 0px;
-}
-.social_icons li {
-  list-style: none;
+.loginButton {
+  background-color: #ffffff22;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
 }
 
-.social_icons a {
-  padding: 10px;
-  margin: 2px 8px;
-  border-radius: 50px;
+.loginButton:hover {
+  background-color: #46665c;
 }
 
-.social_icons a:hover {
-  background-color: #202020;
+.loginIcon {
+  font-size: 1rem;
+}
+
+.contactGrid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: start;
+  gap: 2rem;
+}
+
+.contactItem {
+  max-width: 200px;
+}
+
+.icon {
+  background-color: rgba(255, 255, 255, 0.1);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin: 0 auto 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+
+.contactItem h3 {
+  margin: 0.5rem 0 0.25rem;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.contactItem p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.bottomBar {
+  background-color: #111;
+  color: #ccc;
+  padding: 1rem;
+  font-size: 0.85rem;
 }
