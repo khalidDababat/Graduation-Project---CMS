@@ -1,5 +1,6 @@
 
 const db = require('../config/db');
+const moment = require('moment-timezone');
 
 exports.createComplaint = async (complaintData) => {
     const { user_id, title, description, department_id, status, image_path, admin_id, Note } = complaintData;
@@ -60,6 +61,10 @@ exports.getComplaintDetails = async (complaintId) => {
       WHERE c.id = ?
     `;
     const [results] = await db.query(sql, [complaintId]);
+
+  results.forEach(row => {
+    row.created_at = moment(row.created_at).tz('Asia/Gaza').format('DD/MM/YYYY');
+  });
     return results;
 }
 
@@ -69,6 +74,8 @@ exports.deletedComplaint = async (complaint_id) => {
     // const sqlDelete = `DELETE FROM complaints WHERE id = ?`;
 
     await db.query(sqlUpdate,[complaint_id]);
+    
+
     
     };
 
