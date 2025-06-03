@@ -4,8 +4,8 @@ const adminComplaintController = require('../controllers/adminComplaintControlle
 
 
 router.get('/viewComplaintInfo',adminComplaintController.getComplaintsInfo)// done
-router.post('/filter-by-date', adminComplaintController.getFilteredComplaints);// done
-router.post('/filter-complaints', adminComplaintController.filteredComplaints);// done
+router.post('/filter-by-date', adminComplaintController.getFilteredComplaints);
+router.post('/filter-complaints', adminComplaintController.filteredComplaints);
 
 router.get('/dropdown-data', adminComplaintController.getDropdownData);//done
 
@@ -27,6 +27,7 @@ router.get('/view-image/:imageName', adminComplaintController.viewComplaintImage
 router.get('/download-image/:imageName', adminComplaintController.downloadComplaintImage);//done
 router.get('/complaint/:id', adminComplaintController.getComplaintDetails);//done
 router.delete('/deleteComplaint/:id', adminComplaintController.deleteComplaintbyadmin);//done
+
 
 
 

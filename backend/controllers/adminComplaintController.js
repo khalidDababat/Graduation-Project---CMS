@@ -209,6 +209,30 @@ exports.returnComplaint = async (req, res) => {
   }
 };
 
+exports.getAssignedComplaints = async (req, res) => {
+  const { employee_id } = req.params;
+
+  try {
+    // getAssignedComplaints
+    const complaints = await complaintModel.getAssignedComplaints(employee_id);
+    res.status(200).json({ complaints });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+exports.AssignedComplaintsByEmployee = async (req, res) => {
+  const { employee_id } = req.params;
+
+  try {
+    // getAssignedComplaints
+    const complaints = await complaintModel.getAssignedComplaintsByEmployee(employee_id);
+    res.status(200).json({ complaints });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
 exports.getIncoming = async (req, res) => {
   const { type, user_id } = req.query;
 

@@ -133,65 +133,90 @@ exports.getCountComplaints= async () => {
 
 }
 
-
 exports.assignComplaint = async ({ complaint_id, employee_id, admin_id, note }) => {
-
-    const [existing] = await db.query(
-    'SELECT * FROM Complaint_Assignment WHERE complaint_id = ? AND employee_id = ?',
+  // تحقق إذا كانت الشكوى لا تزال مسندة لنفس الموظف ولم يتم إرجاعها بعد
+  const [existing] = await db.query(
+    `SELECT * FROM Complaint_Assignment 
+    WHERE complaint_id = ? AND employee_id = ? AND is_active = TRUE`,
     [complaint_id, employee_id]
-    );
-    if (existing.length > 0) throw new Error('Complaint already assigned to this employee.');
+  );
 
-// update status complaint
-    await db.query(
-    'UPDATE complaints SET status = ?, note = ? WHERE id = ?',
-    ['assign', note, complaint_id]
-    );
+  if (existing.length > 0) {
+    throw new Error('Complaint is already assigned to this employee.');
+  }
 
-    await db.query(
-    'INSERT INTO Complaint_Assignment (complaint_id, employee_id, assigned_by_admin_id, assigned_at) VALUES (?, ?, ?, ?)',
+  await db.query(
+    'UPDATE complaints SET status = ?, note = ?, admin_id = ? WHERE id = ?',
+    ['assign', note, admin_id, complaint_id]
+  );
+
+  // تعيين الشكوى
+  await db.query(
+    `INSERT INTO Complaint_Assignment 
+    (complaint_id, employee_id, assigned_by_admin_id, assigned_at, is_active)
+    VALUES (?, ?, ?, ?, TRUE)`,
     [complaint_id, employee_id, admin_id, new Date()]
-    );
+  );
 
-  // سجل الحركة (صادرة من الإدمن - واردة للموظف)
-    await db.query(
-    `INSERT INTO complaint_transfer_log (complaint_id, from_user_type, from_user_id, to_user_type, to_user_id, transfer_type, note) VALUES (?, 'admin', ?, 'employee', ?, 'assigned', ?)`,
-    [complaint_id, admin_id, employee_id, note]
+  // سجل النقل
+  await db.query(
+    `INSERT INTO complaint_transfer_log 
+    (complaint_id, from_user_type, from_user_id, to_user_type, to_user_id, transfer_type, note, created_at)
+    VALUES (?, 'admin', ?, 'employee', ?, 'assigned', ?, ?)`,
+    [complaint_id, admin_id, employee_id, note, new Date()]
   );
 };
 
-exports.returnComplaint = async ({ complaint_id, employee_id, note }) => {
 
-        const [existing] = await db.query(
-        `SELECT * FROM complaint_transfer_log 
-        WHERE complaint_id = ? AND from_user_type = 'employee' 
-        AND from_user_id = ? AND transfer_type = 'returned'`,
+
+exports.returnComplaint = async ({ complaint_id, employee_id, note }) => {
+  // تحقق إذا تم إرجاعها سابقًا من نفس الموظف
+  const [existing] = await db.query(
+    `SELECT * FROM complaint_transfer_log 
+     WHERE complaint_id = ? AND from_user_type = 'employee' 
+     AND from_user_id = ? AND transfer_type = 'returned'`,
     [complaint_id, employee_id]
-);
+  );
 
   if (existing.length > 0) {
     throw new Error('Complaint already returned by this employee.');
   }
 
-    // update status
-    await db.query(
+  // تحديث حالة الشكوى
+  await db.query(
     'UPDATE complaints SET status = ? WHERE id = ?',
     ['return', complaint_id]
-    );
+  );
 
-  // سجل الحركة (صادرة من الموظف - واردة للإدمن)
-    await db.query(
-    `INSERT INTO complaint_transfer_log (complaint_id, from_user_type, from_user_id, to_user_type, to_user_id, transfer_type, note) VALUES (?, 'employee', ?, 'admin', NULL, 'returned', ?)`,
-    [complaint_id, employee_id, note]
-    );
+  // جعل الإسناد غير مفعل
+  await db.query(
+    `UPDATE Complaint_Assignment 
+     SET is_active = FALSE 
+     WHERE complaint_id = ? AND employee_id = ?`,
+    [complaint_id, employee_id]
+  );
+
+  // سجل النقل
+  await db.query(
+    `INSERT INTO complaint_transfer_log 
+     (complaint_id, from_user_type, from_user_id, to_user_type, to_user_id, transfer_type, note, created_at)
+     VALUES (?, 'employee', ?, 'admin', NULL, 'returned', ?, ?)`,
+    [complaint_id, employee_id, note, new Date()]
+  );
 };
+
+
 
 // Get Incoming Complaints
 exports.getIncomingComplaints = async (type, user_id) => {
     return await db.query(
-        `SELECT ctl.*, c.title, c.status
+        `SELECT ctl.*, c.title, c.status,
+        e.FullName AS to_employee_name,
+        d.name AS to_department_name
          FROM complaint_transfer_log ctl
          JOIN complaints c ON ctl.complaint_id = c.id
+         LEFT JOIN employees e ON ctl.to_user_type = 'employee' AND ctl.to_user_id = e.id
+         LEFT JOIN departments d ON e.department_id = d.id
          WHERE ctl.to_user_type = ? AND ctl.to_user_id = ?
          ORDER BY ctl.created_at DESC`,
         [type, user_id]
@@ -202,10 +227,10 @@ exports.getIncomingComplaints = async (type, user_id) => {
 exports.getOutgoingComplaints = async (type, user_id) => {
     return await db.query(
         `SELECT ctl.*, c.title, c.status
-         FROM complaint_transfer_log ctl
-         JOIN complaints c ON ctl.complaint_id = c.id
-         WHERE ctl.from_user_type = ? AND ctl.from_user_id = ?
-         ORDER BY ctl.created_at DESC`,
+        FROM complaint_transfer_log ctl
+        JOIN complaints c ON ctl.complaint_id = c.id
+        WHERE ctl.from_user_type = ? AND ctl.from_user_id = ?
+        ORDER BY ctl.created_at DESC`,
         [type, user_id]
     );
 };
@@ -264,7 +289,17 @@ exports.getAssignedComplaints = async (employeeId) => {
   return results;
 }
 
-
+exports.getAssignedComplaintsByEmployee = async (employee_id) => {
+  const [result] = await db.query(
+    `SELECT c.id, c.title, c.description, c.status, c.image_path, c.note, c.created_at, d.name AS department_name
+     FROM complaints c
+     JOIN Complaint_Assignment ca ON c.id = ca.complaint_id
+     JOIN departments d ON c.department_id = d.id
+     WHERE ca.employee_id = ? AND ca.is_active = TRUE`,
+    [employee_id]
+  );
+  return result;
+};
 
 
 

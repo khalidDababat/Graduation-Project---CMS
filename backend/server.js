@@ -23,9 +23,10 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 app.use('/api', authRoutes);
 app.use('/api/admin', adminRoutes); // update-profile  admin
 app.use('/api/employees', employeeRoutes);
+
 app.use('/api/complaints', complaintRoutes);
 app.use('/api/admin', adminComplaintRoutes);
-app.use('/api/complaints', complaintRoutes);
+// app.use('/api/complaints', complaintRoutes);
 
 
 
