@@ -121,13 +121,13 @@ exports.deleteComplaintbyadmin = async (req, res) => {
 };
 
 exports.updateStatus = async (req,res) => {
-  const {complaintId,status} = req.body;
+  const {complaintId,status,note} = req.body;
   
-  // console.log('Updating complaint:', complaintId, 'to status:', status);
+  // console.log('Updating complaint:', complaintId, 'to status:', status, "Note: ",note);
 
   try{
-    const updatecomplaintstatus = await complaintModel.updateStatus(complaintId,status);
-    res.status(200).json({message: 'Complaint status updated successfully.'});
+    const updatecomplaintstatus = await complaintModel.updateStatus(complaintId,status,note);
+    res.status(200).json({message: 'Complaint status and note updated successfully.'});
     
   }
   catch(err){
@@ -193,7 +193,7 @@ exports.assignComplaint = async (req, res) => {
 };
 
 exports.returnComplaint = async (req, res) => {
-  const { complaint_id, employee_id, note } = req.body;
+  const { complaint_id, employee_id, admin_id,note } = req.body;
 
   //  console.log('Received data:', req.body);
 
@@ -202,7 +202,7 @@ exports.returnComplaint = async (req, res) => {
   }
 
   try {
-    await complaintModel.returnComplaint({ complaint_id, employee_id, note });
+    await complaintModel.returnComplaint({ complaint_id, employee_id,admin_id, note });
     res.status(200).json({ message: 'Complaint returned successfully.' });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });

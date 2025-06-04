@@ -4,7 +4,7 @@ const adminComplaintController = require('../controllers/adminComplaintControlle
 
 
 router.get('/viewComplaintInfo',adminComplaintController.getComplaintsInfo)// done
-router.post('/filter-by-date', adminComplaintController.getFilteredComplaints);
+router.post('/filter-by-date', adminComplaintController.getFilteredComplaints);//done
 router.post('/filter-complaints', adminComplaintController.filteredComplaints);
 
 router.get('/dropdown-data', adminComplaintController.getDropdownData);//done

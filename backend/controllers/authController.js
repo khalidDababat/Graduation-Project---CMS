@@ -42,7 +42,7 @@ exports.login = async (req, res) => {
       // console.log("hashedPassword ", hashedPassword);
 
       const isMatch = await bcrypt.compare(password, admin.password);
-      console.log(isMatch)
+      // console.log(isMatch)
       
       if (!isMatch)
         return res.status(401).json({ message: 'Invalid admin credentials.' });

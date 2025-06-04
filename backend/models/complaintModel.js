@@ -91,10 +91,10 @@ exports.updateComplaintByAdmin = async (complaintId, updateData) => {
 
 
 //  Change complaint status (by employee)
-exports.updateStatus = async (complaint_id, status) => {
+exports.updateStatus = async (complaint_id, status,note) => {
 
-    const sql = `UPDATE Complaints SET status = ? WHERE id = ?`;
-    const [result] =  await db.query(sql,[status,complaint_id])
+    const sql = `UPDATE Complaints SET status = ?, Note = ? WHERE id = ?`;
+    const [result] =  await db.query(sql,[status,note,complaint_id])
     
 //  console.log('Update Result:', result);
    return result;
@@ -169,7 +169,7 @@ exports.assignComplaint = async ({ complaint_id, employee_id, admin_id, note }) 
 
 
 
-exports.returnComplaint = async ({ complaint_id, employee_id, note }) => {
+exports.returnComplaint = async ({ complaint_id, employee_id,admin_id, note }) => {
   // تحقق إذا تم إرجاعها سابقًا من نفس الموظف
   const [existing] = await db.query(
     `SELECT * FROM complaint_transfer_log 
@@ -182,9 +182,8 @@ exports.returnComplaint = async ({ complaint_id, employee_id, note }) => {
     throw new Error('Complaint already returned by this employee.');
   }
 
-  // تحديث حالة الشكوى
   await db.query(
-    'UPDATE complaints SET status = ? WHERE id = ?',
+    'UPDATE complaints SET status = ?  WHERE id = ?',
     ['return', complaint_id]
   );
 
@@ -200,8 +199,8 @@ exports.returnComplaint = async ({ complaint_id, employee_id, note }) => {
   await db.query(
     `INSERT INTO complaint_transfer_log 
      (complaint_id, from_user_type, from_user_id, to_user_type, to_user_id, transfer_type, note, created_at)
-     VALUES (?, 'employee', ?, 'admin', NULL, 'returned', ?, ?)`,
-    [complaint_id, employee_id, note, new Date()]
+     VALUES (?, 'employee', ?, 'admin', ?, 'returned', ?, ?)`,
+    [complaint_id, employee_id,admin_id, note, new Date()]
   );
 };
 
