@@ -9,7 +9,10 @@ router.post('/filter-complaints', adminComplaintController.filteredComplaints);
 
 router.get('/dropdown-data', adminComplaintController.getDropdownData);//done
 
+router.put('/updateStatusWithNote', adminComplaintController.updateStatusWithNote);//done
 router.put('/updateStatus', adminComplaintController.updateStatus);//done
+
+
 
 router.get('/getstatus', adminComplaintController.getComplaintByStatus);//done
 

@@ -90,11 +90,21 @@ exports.updateComplaintByAdmin = async (complaintId, updateData) => {
 };
 
 
-//  Change complaint status (by employee)
-exports.updateStatus = async (complaint_id, status,note) => {
+//  Change complaint status 
+exports.updateStatusWithNote = async (complaint_id, status,note) => {
 
     const sql = `UPDATE Complaints SET status = ?, Note = ? WHERE id = ?`;
     const [result] =  await db.query(sql,[status,note,complaint_id])
+    
+//  console.log('Update Result:', result);
+   return result;
+
+};
+
+exports.updateStatus = async (complaint_id, status) => {
+
+    const sql = `UPDATE Complaints SET status = ? WHERE id = ?`;
+    const [result] =  await db.query(sql,[status,complaint_id])
     
 //  console.log('Update Result:', result);
    return result;
