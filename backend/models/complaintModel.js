@@ -154,10 +154,10 @@ exports.assignComplaint = async ({ complaint_id, employee_id, admin_id, note }) 
   if (existing.length > 0) {
     throw new Error('Complaint is already assigned to this employee.');
   }
-
+// note = ?
   await db.query(
-    'UPDATE complaints SET status = ?, note = ?, admin_id = ? WHERE id = ?',
-    ['assign', note, admin_id, complaint_id]
+    'UPDATE complaints SET status = ?, admin_id = ? WHERE id = ?',
+    ['assign', admin_id, complaint_id]
   );
 
   // تعيين الشكوى
