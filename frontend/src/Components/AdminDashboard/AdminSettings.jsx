@@ -79,6 +79,13 @@ const AdminSettings = () => {
       setMessageType("danger");
     }
   };
+ 
+
+  const goBack = ()=>{
+    navigate("/AdminDashboard");
+  }
+
+
 
   return (
     <Fragment>
@@ -163,16 +170,27 @@ const AdminSettings = () => {
           </div>
 
           <div className="text-center">
-            <button type="submit" className="btn btn-primary px-4">
+            <button type="submit" className="btn btn-warning px-4">
               حفظ التغييرات
             </button>
+
+            <button type="button" 
+                    className="btn btn-primary px-4 me-5"
+                    onClick={() => goBack()}>
+              العودة الى الصفحة الرئيسية
+            </button>
+              
           </div>
         </form>
       </div>
 
-      <footer>
-        <div className={styles.copyright_area_Admin}>
-          <p>جميع الحقوق محفوظة ©2025. نظام إدارة الشكاوي لبلدية عنبتا</p>
+  
+
+<footer className="footer bg-white text-center py-3 border-top mt-5">
+        <div className="container">
+          <p className="mb-0 text-muted">
+            جميع الحقوق محفوظة ©2025. نظام إدارة الشكاوي لبلدية عنبتا
+          </p>
         </div>
       </footer>
     </Fragment>

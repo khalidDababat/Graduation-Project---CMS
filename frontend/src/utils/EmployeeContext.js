@@ -14,7 +14,8 @@ export const EmployeeProvider = ({ children }) => {
     const token = localStorage.getItem("token");
     
     const fetchEmployee = async () => {
-      if (user?.id) {
+      if (user?.role === "employee" && user?.id) {
+
         const res = await fetch(
           `http://localhost:5000/api/employees/${user.id}`,
           {
@@ -23,7 +24,7 @@ export const EmployeeProvider = ({ children }) => {
             },
           }
         );
-        const data = await res.json();
+        const data = await res.json(); 
         setEmployee(data[0]);
       }
     };

@@ -255,7 +255,20 @@ body{
 }
 
   
-  
+.requred_star{
+  color: red; 
+  font-weight: bold;
+}   
+
+
+.conteaner_btn{
+   
+  display: flex; 
+  justify-content: space-between;
+
+
+
+}
  
   
   

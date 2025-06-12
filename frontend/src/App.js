@@ -23,9 +23,15 @@ import EditComplaint from "./Components/AdminDashboard/EditComplaint.jsx";
 import ComplaintsIssuedAdmin from "./Components/AdminDashboard/ComplaintsIssuedAdmin.jsx";
 import ComplaintsReceivedAdmin from "./Components/AdminDashboard/ComplaintsReceivedAdmin.jsx";
 
-import MagicLoginHandler from "./pages/MagicLoginHandler.jsx"; 
-import ResetPasswordAdmin from "./pages/ResetPasswordAdmin.jsx"; 
-import ResetPasswordEmployee from "./pages/ResetPasswordEmployee.jsx"; 
+import MagicLoginHandler from "./pages/MagicLoginHandler.jsx";
+
+import ResetPasswordAdmin from "./pages/ResetPasswordAdmin.jsx";
+import ResetPasswordEmployee from "./pages/ResetPasswordEmployee.jsx";
+
+import EditComplaintEmployee from "./Components/EmployeePage/EditComplaintEmployee.jsx";
+import EmployeeSettings from "./Components/EmployeePage/EmployeeSettings.jsx";
+import ComplaintsIssuedEmployee from "./Components/EmployeePage/ComplaintsIssuedEmployee.jsx";
+import ComplaintsReceiveEmployee from "./Components/EmployeePage/ComplaintsReceiveEmployee.jsx";
 
 function App() {
   return (
@@ -38,9 +44,13 @@ function App() {
         <Route path="/Complaint_Track" element={<ComplaintTrack />} />
         <Route path="*" element={<NotFound />} />
 
-        <Route path="/magic-login" element={<MagicLoginHandler/>}/>
-        <Route path="/ResetPasswordAdmin" element={<ResetPasswordAdmin/>}/>
-        <Route path="/ResetPasswordEmployee" element={<ResetPasswordEmployee/>}/>
+        <Route path="/magic-login" element={<MagicLoginHandler />} />
+
+        <Route path="/ResetPasswordAdmin" element={<ResetPasswordAdmin />} />
+        <Route
+          path="/ResetPasswordEmployee"
+          element={<ResetPasswordEmployee />}
+        />
 
         <Route
           path="/AdminDashboard"
@@ -58,7 +68,7 @@ function App() {
             </ProtectedRoute>
           }
         />
-        
+
         <Route
           path="/ComplaintsReceivedAdmin"
           element={
@@ -67,6 +77,31 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/ComplaintsIssuedEmployee"
+          element={
+            <ProtectedRoute>
+                  <EmployeeProvider>
+
+                  <ComplaintsIssuedEmployee />
+                  </EmployeeProvider>
+            
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ComplaintsReceiveEmployee"
+          element={
+            <ProtectedRoute>
+               <EmployeeProvider>
+               <ComplaintsReceiveEmployee />
+               </EmployeeProvider>
+             
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/EditComplaint/:id"
           element={
@@ -88,6 +123,17 @@ function App() {
         />
 
         <Route
+          path="/EmployeeSettings"
+          element={
+            <ProtectedRoute>
+              <EmployeeProvider>
+                <EmployeeSettings />
+              </EmployeeProvider>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
           path="/EmployeePage"
           element={
             <ProtectedRoute>
@@ -103,6 +149,17 @@ function App() {
             <ProtectedRoute>
               <EmployeeProvider>
                 <EmployeeMangment />
+              </EmployeeProvider>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/EditComplaintEmployee/:id"
+          element={
+            <ProtectedRoute>
+              <EmployeeProvider>
+                <EditComplaintEmployee />
               </EmployeeProvider>
             </ProtectedRoute>
           }

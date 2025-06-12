@@ -6,6 +6,8 @@ import styles from "./AdminDashboard.module.css";
 import { useAuth } from "../../utils/PrivateRoutes";
 import { useNavigate } from "react-router-dom";
 import HeaderAdmin from "./HeaderAdmin";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const EmployeeManagement = () => {
   const navigate = useNavigate();
@@ -24,6 +26,10 @@ const EmployeeManagement = () => {
     department_id: "",
   });
   const [editIndex, setEditIndex] = useState(null);
+
+
+ 
+
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -64,8 +70,10 @@ const EmployeeManagement = () => {
         // console.log("theeeeee", res);
         if (!res.ok) throw new Error("Failed to update employee");
 
-        setMessageSuccess("تم تحديث بيانات الموظف ");
-        setTimeout(() => setMessageSuccess(""), 2000);
+        // setMessageSuccess("تم تحديث بيانات الموظف ");
+        // setTimeout(() => setMessageSuccess(""), 2000);
+
+        toast.success("تم تحديث بيانات الموظف ");
       } else {
         const res = await fetch("http://localhost:5000/api/employees", {
           method: "POST",
@@ -79,23 +87,17 @@ const EmployeeManagement = () => {
 
         if (!res.ok) throw new Error("Failed to add employee");
 
-        // setMessageSuccess("The employee has been added successfully.");
-        setMessageSuccess("تم إضافة الموظف ");
-        setTimeout(() => setMessageSuccess(""), 2000);
+        toast.success("تم إضافة الموظف بنجاح ");
       }
 
       fetchEmployees();
     } catch (err) {
       console.error("Operation Error:", err);
-      setMessageError("Error!");
-      setTimeout(() => setMessageError(""), 2000);
+      // setMessageError("Error!");
+      // setTimeout(() => setMessageError(""), 2000);
+      toast.error("حدث خطأ أثناء تحديث بياتات الموظف .يرجى المحاولة لاحقا ");
     }
   }
-
-  const handelLogout = () => {
-    logOut();
-    navigate("/loginAdmin");
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -114,7 +116,7 @@ const EmployeeManagement = () => {
 
   const handleEdit = (index) => {
     const emp = employees[index];
-    console.log("the employee Edited ", emp);
+    //console.log("the employee Edited ", emp);
     setForm({
       fullName: emp.FullName,
       phone: emp.phone,
@@ -141,14 +143,12 @@ const EmployeeManagement = () => {
       );
 
       if (!res.ok) throw new Error("Failed to delete employee");
-
-      setMessageError("تم حذف الموظف ");
-      setTimeout(() => setMessageError(""), 2000);
+      toast.warning(`تم حذف الموظف ${employee.FullName}`);
       fetchEmployees();
     } catch (error) {
       console.error("Delete Error:", error);
-      setMessageError("Failed to delete employee!");
-      setTimeout(() => setMessageError(""), 2000);
+
+      toast.info("فشل حذف الموظف ");
     }
   };
 
@@ -160,25 +160,7 @@ const EmployeeManagement = () => {
 
   return (
     <Fragment>
-      {/* <header className={styles.header_Admin}>
-        <div className="d-flex">
-          <div className={styles.logo}>
-            <img src={logo_image} className={styles.logoImage} alt="logo" />
-          </div>
-          <div className="d-inline ms-5 p-4">
-            <h4 className="mt-1">لوحة تحكم المسؤول - بلدية عنبتا</h4>
-          </div>
-        </div>
-
-        <div className="d-flex">
-          <form>
-            <button type="button" className={styles.btn_user}>
-              <FaUser size={25} />
-              <span className="m-1">{user?.username}</span>
-            </button>
-          </form>
-        </div>
-      </header> */}
+      <ToastContainer position="bottom-right" />
 
       <div>
         <HeaderAdmin />
@@ -196,23 +178,11 @@ const EmployeeManagement = () => {
               </li>
               <li>
                 <Link to="/ComplaintsIssuedAdmin">الشكاوي الصادرة</Link>
-                <span className={styles.notify_complaint}>0</span>
               </li>
               <li>
                 <Link to="/ComplaintsReceivedAdmin">الشكاوي الواردة </Link>
-                <span className={styles.notify_complaint}>0</span>
               </li>
-              {/* <li>
-                <Link to="">تغيير كلمة السر</Link>
-              </li> */}
-              <li>
-                <button
-                  onClick={handelLogout}
-                  className="btn btn-danger w-100 mt-2"
-                >
-                  تسجيل الخروج
-                </button>
-              </li>
+           
             </ul>
           </div>
         </div>
@@ -280,7 +250,9 @@ const EmployeeManagement = () => {
               ))}
             </select>
 
-            <label htmlFor="password">كلمة المرور</label>
+            <label htmlFor="password">كلمة المرور
+              <span className={styles.requred_star}>*</span>
+            </label>
             <input
               type="password"
               id="password"
@@ -383,6 +355,14 @@ const EmployeeManagement = () => {
           </table>
         </div>
       </div>
+
+      <footer className="footer bg-white text-center py-3 border-top mt-5">
+        <div className="container">
+          <p className="mb-0 text-muted">
+            جميع الحقوق محفوظة ©2025. نظام إدارة الشكاوي لبلدية عنبتا
+          </p>
+        </div>
+      </footer>
     </Fragment>
   );
 };

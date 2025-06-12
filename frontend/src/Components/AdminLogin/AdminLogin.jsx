@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from "react";
+import React, { useState, Fragment ,useEffect} from "react";
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../../Assets/Logo_image.jpg"; 
 import {useAuth} from  "../../utils/PrivateRoutes.js"; 
@@ -60,7 +60,16 @@ const AdminLogin = () => {
       }
     }
   };
+ 
 
+  useEffect(() => {
+    setUsername("");
+    setPassword("");
+    setID_Number("");
+    setPasswordEmployee("");
+    setMessageField("");
+  }, [userType]);
+  
   return (
     <Fragment>
       <div className="container py-5">
@@ -69,7 +78,7 @@ const AdminLogin = () => {
             <div className="card shadow-lg p-4">
               <div className="text-center mb-3">
                 <img src={logo} alt="Logo" width="100" />
-                <h3 className="mt-3">تسجيل الدخول</h3>
+                <h3 className="mt-3">تسجيل دخول الموظفين</h3>
               </div>
 
               {messageField && (
@@ -77,10 +86,10 @@ const AdminLogin = () => {
               )}
 
               <form onSubmit={handleLogin}>
-                <div className="mb-3">
-                  {/* <label className="form-label">اختر نوع المستخدم</label> */}
+                <div className="mb-3 ">
+
                   <select
-                    className="form-select"
+                    className="form-select fw-bold"
                     value={userType}
                     onChange={(e) => setUserType(e.target.value)}
                   >
@@ -124,8 +133,10 @@ const AdminLogin = () => {
                       </Link>
                     </div>
                   </>
-                )}
-
+                )
+               
+                }
+        
                 {userType === "employee" && (
                   <>
                     <div className="form-floating mb-3">

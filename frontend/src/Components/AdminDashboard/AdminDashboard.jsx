@@ -4,12 +4,17 @@ import logo_image from "../../Assets/Logo_image.jpg";
 import { FaImage } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../utils/PrivateRoutes";
-
-import HeaderAdmin from "./HeaderAdmin";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+//import { useLocation } from "react-router-dom";
+import HeaderAdmin from "./HeaderAdmin.jsx"
+import StatsSection from "../StatsSection/StatsSection .jsx";
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const { user, logOut } = useAuth();
+
+  const [assignments, setAssignments] = useState([]);
 
   const handelLogout = () => {
     logOut();
@@ -18,6 +23,9 @@ const AdminDashboard = () => {
 
   const [complaints, setComplaints] = useState([]);
   const [departments, setDepartments] = useState([]);
+  const [employees, setEmployees] = useState([]);
+
+ 
 
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -34,18 +42,14 @@ const AdminDashboard = () => {
           console.error("HTTP error", res.status);
           return;
         }
-        const data = await res.json(); 
-        
+        const data = await res.json();
+
         const setOFComplaints = data.complaints || data.data;
         if (Array.isArray(setOFComplaints) && setOFComplaints.length > 0) {
           setComplaints(setOFComplaints);
         } else {
-          // console.log("لا يوجد شكاوي متقدمه ");
           setComplaints([]);
-          setmassege("لا يوجد شكاوي متقدمة ");
-          setTimeout(() => {
-            setmassege("");
-          }, 5000);
+          toast.warning("لا يوجد شكاوي متقدمة");
         }
       } catch (error) {
         console.log(error);
@@ -64,7 +68,73 @@ const AdminDashboard = () => {
     fetchDepartments();
   }, []);
 
+  useEffect(() => {
+    // Fetch employees
+    fetch("http://localhost:5000/api/employees/")
+      .then((res) => res.json())
+      .then((data) => {
+        // console.log("Employees fetched:", data);
+        setEmployees(data);
+      });
+  }, []);
+
+  
+
+
+
+
+
+  const getAssignedEmployeeName = (complaintId) => {
+    const complaintTransfers = assignments
+      .filter(t => t.complaint_id === complaintId)
+      .sort((a, b) => new Date(a.created_at) - new Date(b.created_at)); // ترتيب حسب التاريخ
+  
+    const lastTransfer = complaintTransfers[complaintTransfers.length - 1];
+  
+    if (!lastTransfer) return "لم يتم الإسناد";
+  
+    if (lastTransfer.transfer_type === "returned") {
+      return "لم يتم الإسناد";
+    }
+  
+    if (lastTransfer.transfer_type === "assigned") {
+      const emp = employees.find(e => e.id === lastTransfer.to_user_id);
+      return emp ? emp.FullName : "لم يتم الإسناد";
+    }
+  
+    return "لم يتم الإسناد";
+  };
+
+
+
+ 
+  useEffect(() => {
+
+    const fetchAssignments = async () =>{
+   
+      try{
+ 
+        const res =await fetch("http://localhost:5000/api/admin/outgoingComplaints?type=admin&user_id=1"); 
+        const data = await res.json(); 
+        setAssignments(data);         
+        
+
+      }catch(error){
+         console.log("error",error);
+      }
+
+    }
+    fetchAssignments();
+  },[]);
+ 
+ 
+  
   const filteredComplaints = complaints.filter((c) => {
+    
+    if (c.is_deleted_by_admin === 1) return false; 
+  
+  
+  
     const localDate = new Date(c.created_at).toLocaleDateString("en-GB", {
       timeZone: "Asia/Hebron",
       day: "2-digit",
@@ -86,7 +156,6 @@ const AdminDashboard = () => {
       new Date(endDate).toLocaleString("en-US", { timeZone: "Asia/Hebron" })
     );
 
-
     return complaintDate >= start && complaintDate <= end;
   });
 
@@ -96,17 +165,11 @@ const AdminDashboard = () => {
 
   return (
     <Fragment>
+      <ToastContainer position="bottom-right" autoClose={7000} />
+
       <div>
         <HeaderAdmin />
       </div>
-
-      {massege && (
-        <div
-          className={`alert alert-danger text-center mp-3 ${styles.massege}`}
-        >
-          {massege}
-        </div>
-      )}
 
       <div className={styles.conteant_page}>
         {/* Sidebar */}
@@ -121,28 +184,29 @@ const AdminDashboard = () => {
             <li>
               <Link to="/ComplaintsIssuedAdmin">
                 الشكاوي الصادرة{" "}
-                <span className={styles.notify_complaint}>0</span>
+                {/* <span className={styles.notify_complaint}>0</span> */}
               </Link>
             </li>
             <li>
               <Link to="/ComplaintsReceivedAdmin">
                 الشكاوي الواردة{" "}
-                <span className={styles.notify_complaint}>0</span>
+                {/* <span className={styles.notify_complaint}>0</span> */}
               </Link>
             </li>
-            <li>
-              <button
-                onClick={handelLogout}
-                className="btn btn-danger w-100 mt-2"
-              >
-                تسجيل الخروج
-              </button>
-            </li>
+         
           </ul>
         </div>
 
         {/* Main content */}
         <div className="bg-light ">
+
+
+
+        <div>
+          <StatsSection />
+        </div>
+
+
           {/* Date filter */}
 
           <div className={`d-flex gap-3 align-items-center m-4`}>
@@ -171,7 +235,6 @@ const AdminDashboard = () => {
               </p>
             )}
             {filteredComplaints.map((complaint) => (
-              
               <div key={complaint.id} className="col-md-6 col-lg-4 mb-4">
                 <div
                   className="card shadow-sm h-100"
@@ -183,15 +246,10 @@ const AdminDashboard = () => {
                     <p className="card-text text-muted">
                       {complaint.description.slice(0, 100)}...
                     </p>
-                    {/* <p>
-                      <strong>رقم هاتف المواطن: </strong>{" "}
-                      {complaint.phone}
-                     
-                    </p> */}
 
                     <p>
-                      <strong>الموظف:</strong>{" "}
-                      {complaint.employee || "غير مسند"}
+                      <strong>الموظف المسند اليه:</strong>
+                       {getAssignedEmployeeName(complaint.id)}
                     </p>
                     <p>
                       <strong>الدائرة:</strong>
@@ -213,7 +271,26 @@ const AdminDashboard = () => {
                     </p>
                     <p>
                       <strong>الحالة:</strong>{" "}
-                      <span className="badge bg-info">{complaint.status}</span>
+
+                      <span
+                        className={`badge ${
+                          complaint.status === "assign"
+                            ? "bg-warning"
+                            : complaint.status === "قيد المعالجة"
+                            ? "bg-info"
+                            : complaint.status === "return"
+                            ? "bg-success"
+                            : complaint.status === "مغلقة"
+                            ? "bg-secondary"
+                            : complaint.status ==="تم الحل"
+                            ? "bg-dark"
+                            : "bg-danger"
+                        }`}
+                      >
+                        {complaint.status}
+                      </span>
+
+
                     </p>
                     {/* {complaint.image_path && (
                       <button className="btn btn-sm btn-outline-secondary mt-2">

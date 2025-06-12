@@ -1,23 +1,26 @@
 import React, { Fragment, useState } from "react";
 import { useLocation } from "react-router-dom";
 import styles from "./ChangePassword.module.css";
+import logo from "../Assets/Logo_image.jpg"; 
+
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ForgotePassword = () => {
   const location = useLocation();
-  const role = location.state?.role ;
+  const role = location.state?.role;
 
-
-//  console.log("Role passed from login page:", role);
+  //console.log("Role passed from login page:", role);
 
   const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  // const [message, setMessage] = useState("");
+  // const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!email) {
-      setError("يرجى إدخال البريد الإلكتروني");
+      toast.error("يرجى إدخال البريد الإلكتروني ");
       return;
     }
 
@@ -29,48 +32,25 @@ const ForgotePassword = () => {
       });
 
       if (!res.ok) {
-        setError("البريد الإلكتروني غير موجود ");
-        setTimeout(() => {
-          setError("");
-        }, 6000);
+        toast.error("البريد الإلكتروني غير موجود ");
         throw new Error("البريد الإلكتروني غير موجود");
       }
 
-      setMessage("تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني.");
-      setEmail("");
-      setTimeout(() => {
-        setMessage("");
-      }, 6000);
+      toast.success(
+        "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني "
+      );
     } catch (err) {
-      setError(err.message);
+      toast.error("فشلت عملية إعادة كلمة المرور ");
     }
   };
 
-  function closeAlert() {
-    document.getElementById("close").style.display = "none";
-  }
 
   return (
     <Fragment>
-      <div className="container mt-5" style={{ maxWidth: "400px" }}>
-        <h3 className="mb-4 text-center">نسيت كلمة المرور؟</h3>
+      <ToastContainer position="middle-right" autoClose={7000} />
 
-        {message && (
-          <div id="close" className="alert alert-success">
-            {message}
-            <span onClick={() => closeAlert()} className={styles.close_alert}>
-              X
-            </span>
-          </div>
-        )}
-        {error && (
-          <div className="alert alert-danger">
-            {error}
-            <span onClick={() => closeAlert()} className={styles.close_alert}>
-              X
-            </span>
-          </div>
-        )}
+      {/* <div className="container mt-5" style={{ maxWidth: "400px" }}>
+        <h3 className="mb-4 text-center">نسيت كلمة المرور؟</h3>
 
         <form onSubmit={handleSubmit}>
           <label htmlFor="email" className="form-label">
@@ -90,6 +70,46 @@ const ForgotePassword = () => {
             إرسال رابط تعيين كلمة السر
           </button>
         </form>
+      </div> */} 
+
+<div className="container py-5">
+        <div className="row justify-content-center align-items-center min-vh-100">
+          <div className="col-md-6">
+            <div className="card shadow p-4">
+              <div className="text-center mb-4">
+                <img src={logo} alt="Logo" width="100" className="mb-3" />
+                <h4 className="fw-bold">نسيت كلمة المرور؟</h4>
+                <p className="text-muted small">أدخل بريدك الإلكتروني لإرسال رابط التعيين</p>
+              </div>
+
+              <form onSubmit={handleSubmit}>
+                <div className="mb-3">
+                  <label htmlFor="email" className="form-label fw-bold">
+                    البريد الإلكتروني
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    className="form-control"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="أدخل بريدك الإلكتروني"
+                    required
+                  />
+                </div>
+
+                <div className="d-grid">
+                  <button type="submit" className="btn btn-primary">
+                    إرسال 
+                  </button>
+                </div>
+              </form>
+            </div>
+            <div className="text-center mt-4 text-muted small">
+              جميع الحقوق محفوظة ©2025. نظام إدارة الشكاوي لبلدية عنبتا
+            </div>
+          </div>
+        </div>
       </div>
     </Fragment>
   );
