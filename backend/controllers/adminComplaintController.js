@@ -1,6 +1,11 @@
 const path = require('path');
 const fs = require('fs');
 const moment = require('moment');
+// const fetch = require('node-fetch');
+// const archiver = require('archiver');
+const axios = require('axios');
+const archiver = require('archiver');
+const { pipeline } = require('stream');
 const complaintModel = require('../models/complaintModel');
 const departmentModel = require('../models/departmentModel');
 const employeeModel = require('../models/employeeModel');
@@ -55,29 +60,72 @@ exports.getDropdownData = async (req, res) => {
 exports.viewComplaintImage = async (req, res) => {
   try {
     const { imageName } = req.params;
-    const imagePath = path.join(__dirname, '../uploads/complaints/images', imageName);
+    // const imagePath = path.join(__dirname, '../uploads/complaints/images', imageName);
 
-    if (!fs.existsSync(imagePath)) {
-      return res.status(404).json({ message: 'Image not found' });
+    // if (!fs.existsSync(imagePath)) {
+    //   return res.status(404).json({ message: 'Image not found' });
+    // }
+
+     if (imageName.startsWith('http')) {
+      return res.redirect(imageName);
     }
-    res.sendFile(imagePath);
+
+    const imageUrl = `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload/complaints/${imageName}`;
+    return res.redirect(imageUrl);
+    
   } catch (err) {
     res.status(500).json({ message: 'Error displaying image', error: err.message });
   }
 };
-// download image complaint
-exports.downloadComplaintImage = async (req, res) => {
-  try {
-    const { imageName } = req.params;
-    const imagePath = path.join(__dirname, '../uploads/complaints/images', imageName);
 
-    if (!fs.existsSync(imagePath)) {
-      return res.status(404).json({ message: 'Image not found' });
+///////////////////////
+
+// download image complaint
+exports.downloadComplaintImages = async (req, res) => {
+  try {
+    const complaintId = req.params.id;
+    const rows = await complaintModel.getImageComplaintPath(complaintId);
+
+    if (!rows || rows.length === 0) {
+      return res.status(404).json({ message: 'Complaint not found' });
     }
-    res.download(imagePath);
-    res.status(200).json({ message: 'download successfully' });
+
+    let imagePath = rows[0].image_path;
+    if (!imagePath) {
+      return res.status(404).json({ message: 'No files found for this complaint' });
+    }
+
+    const urls = imagePath.split(',').map(url => url.trim());
+
+    res.setHeader('Content-Type', 'application/zip');
+    res.setHeader('Content-Disposition', `attachment; filename="complaint_${complaintId}_files.zip"`);
+
+    const archive = archiver('zip', { zlib: { level: 9 } });
+    archive.pipe(res);
+
+    for (let url of urls) {
+      // console.log('⬇️ Trying to download exactly as:', url);
+
+      const filename = path.basename(new URL(url).pathname);
+      try {
+        const response = await axios({
+          method: 'get',
+          url: url,
+          responseType: 'stream',
+          headers: { 'User-Agent': 'Mozilla/5.0' }
+        });
+
+        archive.append(response.data, { name: filename });
+        // console.log(' Downloaded:', filename);
+      } catch (err) {
+        console.warn(' Failed to download:', url, err.message);
+      }
+    }
+
+    await archive.finalize();
   } catch (err) {
-    res.status(500).json({ message: 'Error downloading image', error: err.message });
+    console.error('Download ZIP error:', err);
+    res.status(500).json({ message: 'Error downloading files', error: err.message });
   }
 };
 

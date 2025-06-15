@@ -222,15 +222,21 @@ exports.getIncomingComplaints = async (type, user_id) => {
         `SELECT ctl.*, c.title, c.status,
         e.FullName AS to_employee_name,
         d.name AS to_department_name
-         FROM complaint_transfer_log ctl
-         JOIN complaints c ON ctl.complaint_id = c.id
-         LEFT JOIN employees e ON ctl.to_user_type = 'employee' AND ctl.to_user_id = e.id
-         LEFT JOIN departments d ON e.department_id = d.id
-         WHERE ctl.to_user_type = ? AND ctl.to_user_id = ?
-         ORDER BY ctl.created_at DESC`,
+        FROM complaint_transfer_log ctl
+        JOIN complaints c ON ctl.complaint_id = c.id
+        LEFT JOIN employees e ON ctl.to_user_type = 'employee' AND ctl.to_user_id = e.id
+        LEFT JOIN departments d ON e.department_id = d.id
+
+        WHERE ctl.to_user_type = ? AND ctl.to_user_id = ?
+        ORDER BY ctl.created_at DESC`,
         [type, user_id]
     );
 };
+
+//          JOIN Complaint_Assignment ca 
+//           ON ca.complaint_id = ctl.complaint_id 
+//         AND ca.employee_id = ctl.to_user_id 
+//         AND ca.is_active = TRUE
 
 // Get Outgoing Complaints
 exports.getOutgoingComplaints = async (type, user_id) => {
@@ -243,7 +249,7 @@ exports.getOutgoingComplaints = async (type, user_id) => {
         [type, user_id]
     );
 };
-
+// AND complaints.is_deleted_by_admin = FALSE
 exports.getComplaintsByCitizenIDNumber =async (ID_Number) => {
   const query = `
     SELECT 
@@ -253,7 +259,7 @@ exports.getComplaintsByCitizenIDNumber =async (ID_Number) => {
       complaints.created_at, complaints.Note
     FROM complaints
     INNER JOIN users ON complaints.user_id = users.id
-    WHERE users.ID_number = ? AND complaints.is_deleted_by_admin = FALSE
+    WHERE users.ID_number = ? 
     ORDER BY complaints.created_at DESC
   `;
   const [rows] = await db.query(query, [ID_Number]);
@@ -301,14 +307,20 @@ exports.getAssignedComplaints = async (employeeId) => {
 exports.getAssignedComplaintsByEmployee = async (employee_id) => {
   const [result] = await db.query(
     `SELECT c.id, c.title, c.description, c.status, c.image_path, c.note, c.created_at, d.name AS department_name
-     FROM complaints c
-     JOIN Complaint_Assignment ca ON c.id = ca.complaint_id
-     JOIN departments d ON c.department_id = d.id
-     WHERE ca.employee_id = ? AND ca.is_active = TRUE`,
+    FROM complaints c
+    JOIN Complaint_Assignment ca ON c.id = ca.complaint_id
+    JOIN departments d ON c.department_id = d.id
+    WHERE ca.employee_id = ? AND ca.is_active = TRUE`,
     [employee_id]
   );
   return result;
 };
+exports.getImageComplaintPath = async (complaintId) => {
+  const [rows] = await db.query('SELECT image_path FROM complaints WHERE id = ?',[complaintId]);
+
+ return rows; 
+};
+
 
 
 

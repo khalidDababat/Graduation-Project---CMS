@@ -1,8 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const upload = require('../middleware/upload');
+// const upload = require('../middleware/upload');
 const complaintController = require('../controllers/complaintController');
 const adminComplaintController = require('../controllers/adminComplaintController');
+
+const { storage } = require('../config/cloudinary');
+const multer = require('multer');
+const upload = multer({ storage });
 
 
 router.post('/submit', upload.array('attachments', 5), complaintController.submitComplaint);

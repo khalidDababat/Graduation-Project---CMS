@@ -10,7 +10,7 @@ exports.submitComplaint = async (req, res) => {
       return res.status(400).json({ message: 'At least one file is required.' });
     }
 
-    const fileNames = files.map(file => file.filename).join(',');
+    const fileUrl = files.map(file => file.path).join(',');
 
     const {
       full_name,
@@ -41,7 +41,7 @@ exports.submitComplaint = async (req, res) => {
       description,
       department_id,
       status: 'new',
-      image_path: fileNames,
+      image_path: fileUrl,
       admin_id: null,
       Note: null,
       created_at
