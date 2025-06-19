@@ -5,14 +5,13 @@ const mysql = require('mysql2/promise');
 
 
 
-// var con = mysql.createConnection({
-//   host: "localhost",
-//   user: "root",
-//   password: "",
-//   database:"cmsdb"
-// });
 
 
+/*
+createPool 
+مفضل للمشاريع الكبيرة و المتوسطة بسمح بأعادة استخدام الاتصالات 
+بدل فتح اتصال جديد بكل مره هيك قلل الضغط على السيرفر و بزيد الاداء 
+*/
 const pool = mysql.createPool({
   host: "localhost",
   user: "root",

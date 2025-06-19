@@ -320,6 +320,15 @@ exports.getImageComplaintPath = async (complaintId) => {
 
  return rows; 
 };
+exports.updateComplaintDepartment = async (complaintId, newDepartmentId, adminId) => {
+  const [result] = await db.query(
+    `UPDATE complaints 
+     SET department_id = ?, admin_id = ? 
+     WHERE id = ? AND is_deleted_by_admin = FALSE`,
+    [newDepartmentId, adminId, complaintId]
+  );
+  return result;
+};
 
 
 

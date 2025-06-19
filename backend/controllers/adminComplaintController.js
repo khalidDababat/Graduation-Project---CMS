@@ -322,6 +322,35 @@ exports.getOutgoing = async (req, res) => {
   }
 };
 
+exports.updateDepartment = async (req, res) => {
+  try {
+    const { complaintId } = req.params;
+    const { newDepartmentId, adminId } = req.body;
+
+    if (!newDepartmentId || !adminId) {
+      return res.status(400).json({ message: 'Missing data' });
+    }
+
+    const department = await departmentModel.getDepartmentById(newDepartmentId);
+    if (!department) {
+      return res.status(404).json({ message: 'Department not found' });
+    }
+
+    const result = await complaintModel.updateComplaintDepartment(complaintId, newDepartmentId, adminId);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Complaint not found or already deleted' });
+    }
+
+    res.json({ message: 'Department updated successfully' });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+
 
 
 

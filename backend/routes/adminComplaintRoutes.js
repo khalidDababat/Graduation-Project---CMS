@@ -28,6 +28,9 @@ router.get('/outgoingComplaints', adminComplaintController.getOutgoing);
 
 router.get('/view-image/:imageName', adminComplaintController.viewComplaintImage);
 
+router.put('/:complaintId/change-department', adminComplaintController.updateDepartment);
+
+
 // router.get('/download-image:imageName', adminComplaintController.downloadComplaintImage);
 router.get('/download-images/:id', adminComplaintController.downloadComplaintImages);
 
