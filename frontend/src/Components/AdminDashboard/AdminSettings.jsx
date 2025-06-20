@@ -2,6 +2,9 @@ import React, { Fragment, useEffect, useState } from "react";
 import { useAuth } from "../../utils/PrivateRoutes";
 import { useNavigate ,useSearchParams } from "react-router-dom";
 import styles from "./AdminDashboard.module.css";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 import HeaderAdmin from "./HeaderAdmin";
 const AdminSettings = () => {
@@ -36,8 +39,9 @@ const AdminSettings = () => {
     e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
-      setMessage("كلمتا المرور غير متطابقتين.");
-      setMessageType("danger");
+      // setMessage("كلمتا المرور غير متطابقتين.");
+      // setMessageType("danger");
+      toast.error("كلمتا المرور غير متطابقتين.");
       return;
     }
 
@@ -66,12 +70,15 @@ const AdminSettings = () => {
       
 
       if (response.ok) {
-        setMessage("تم تحديث إعدادات مدير النظام بنجاح ");
-        setMessageType("success");
-        // navigate("/AdminDashboard");
+        toast.success("تم تحديث إعدادات مدير النظام بنجاح"); 
+        // setMessage("تم تحديث إعدادات مدير النظام بنجاح ");
+        // setMessageType("success");
+         // navigate("/AdminDashboard");
       } else {
-        setMessage(data.message || "حدث خطأ أثناء تحديث البيانات.");
-        setMessageType("danger");
+        // setMessage(data.message || "حدث خطأ أثناء تحديث البيانات.");
+        // setMessageType("danger");
+        toast.error(data.message || "حدث خطأ أثناء تحديث البيانات.");
+        console.error(data);
       }
     } catch (error) {
       console.error(error);
@@ -92,18 +99,19 @@ const AdminSettings = () => {
       <div>
         <HeaderAdmin />
       </div>
+      <ToastContainer position="bottom-right" autoClose={7000} />
 
       <div className="container mt-5 mb-5 h-100" style={{ maxWidth: "600px" }}>
         <h3 className="mb-4 text-center">تعديل إعدادات مدير النظام</h3>
 
-        {message && (
+        {/* {message && (
           <div
             className={`alert alert-${messageType} text-center`}
             role="alert"
           >
             {message}
           </div>
-        )}
+        )} */}
 
         <form
           onSubmit={handleSubmit}

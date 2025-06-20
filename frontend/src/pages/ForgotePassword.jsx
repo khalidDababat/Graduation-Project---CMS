@@ -33,7 +33,7 @@ const ForgotePassword = () => {
 
       if (!res.ok) {
         toast.error("البريد الإلكتروني غير موجود ");
-        throw new Error("البريد الإلكتروني غير موجود");
+        //throw new Error("البريد الإلكتروني غير موجود");
       }
 
       toast.success(

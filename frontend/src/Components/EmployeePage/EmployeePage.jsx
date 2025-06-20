@@ -150,7 +150,7 @@ const EmployeePage = () => {
                   <tbody>
                    
                     {complaintsAssigned
-                    .filter((complaint) => complaint.status !== "return" && complaint.status !== "مغلقة"  && complaint.status !== "New" )
+                    .filter((complaint) => complaint.status !== "return" && complaint.status !== "مغلقة"   )
                      .map((complaint) => (
                       <tr key={complaint.id}>
                         <td>{complaint.complaint_id}</td>

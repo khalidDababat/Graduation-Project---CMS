@@ -53,10 +53,10 @@ const AdminLogin = () => {
     } else {
       if(userType === "admin"){
       setMessageField("إسم المستخدم او كلمة المرور خطأ ");
-      setTimeout(() => setMessageField(""), 9000);
+      setTimeout(() => setMessageField(""), 2000);
       }else{
       setMessageField("رقم الهوية او كلمة المرور خطأ ");
-      setTimeout(() => setMessageField(""), 9000);
+      setTimeout(() => setMessageField(""), 2000);
       }
     }
   };

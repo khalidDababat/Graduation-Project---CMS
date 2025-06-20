@@ -19,12 +19,12 @@ const Footer = () => {
           <div className={styles.contactItem}>
             <div className={styles.icon}><FaPhoneAlt /></div>
             <h3>الهاتف</h3>
-            <p>09-2345678</p>
+            <p>09-2574785</p>
           </div>
           <div className={styles.contactItem}>
             <div className={styles.icon}><FaEnvelope /></div>
             <h3>البريد الإلكتروني</h3>
-            <p>info@anabta-municipality.ps</p>
+            <p>k.a.dababat@students.ptuk.edu.ps</p>
           </div>
           <div className={styles.contactItem}>
             <div className={styles.icon}><FaMapMarkerAlt /></div>

@@ -8,6 +8,8 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { LuFileText } from "react-icons/lu";
 
+import SuccessModal from "../Model/SuccessModal.jsx";
+
 import { BsCheckCircleFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
 
@@ -19,6 +21,13 @@ const ComplaintForm = () => {
   const [PhoneError, setPhoneError] = useState("");
   const [messageError, setmessageError] = useState("");
   const [IDError, setIDError] = useState("");
+   
+  const [isLoading, setIsLoading] = useState(false);
+   
+
+  const [showModal, setShowModal] = useState(false);
+  const [pendingData, setPendingData] = useState(null);
+
   const [formData, setFormData] = useState({
     full_name: "",
     phone: "",
@@ -29,6 +38,20 @@ const ComplaintForm = () => {
     description: "",
     files: [],
   });
+
+  const handleConfirm = () => {
+    setShowModal(false);
+    if (pendingData) {
+      submitComplaint(pendingData);
+      setPendingData(null);
+    }
+  };
+
+  const handleCancel = () => {
+    setShowModal(false);
+    toast.info("تم إلغاء إرسال الشكوى.");
+    return;
+  };
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -64,22 +87,7 @@ const ComplaintForm = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!formData.phone) {
-      toast.error("رقم الهاتف مطلوب.");
-      return;
-    }
-
-    // const phoneRegex = /^9705[6-9]\d{7}$/;
-    // if (!phoneRegex.test(formData.phone)) {
-    //   setPhoneError("رقم الهاتف غير صحيح. الرجاء إدخال رقم جوال  صالح.");
-    //   return;
-    // } else {
-    //   setPhoneError("");
-    // }
-
+  const submitComplaint = async (dataToSend) => {
     const data = new FormData();
     data.append("full_name", formData.full_name);
     data.append("phone", formData.phone);
@@ -96,21 +104,12 @@ const ComplaintForm = () => {
     }
 
     try {
-      const confermSubmit = window.confirm("هل أنت متأكد من إرسال الشكوى؟");
-      if (!confermSubmit) {
-        toast.info("تم إلغاء إرسال الشكوى.");
-        return;
-      }
-
       const res = await fetch("http://localhost:5000/api/complaints/submit", {
         method: "POST",
         body: data,
       });
-      // const Result =await res.json();
-      // console.log("The result ",Result);
 
       const contentType = res.headers.get("content-type");
-
       if (contentType && contentType.includes("application/json")) {
         const result = await res.json();
 
@@ -129,7 +128,23 @@ const ComplaintForm = () => {
     } catch (error) {
       console.log(error);
       toast.error("حدث خطأ اثناء إرسال الشكوى ");
+    }finally {
+      setIsLoading(false);
     }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!formData.phone) {
+      toast.error("رقم الهاتف مطلوب.");
+      return;
+    }
+
+    setIsLoading(true);
+
+    setPendingData(formData);
+    setShowModal(true);
   };
 
   return (
@@ -140,169 +155,173 @@ const ComplaintForm = () => {
         <HeaderPart />
       </div>
 
-      <div className={styles.conteaner}>
+      <div className={`container ${styles.containerWrapper}`}>
         <div className={styles.complaint_Content}>
           <div className={styles.title_page}>
             <h2>
-              {" "}
-              <span>{<LuFileText />} إنشاء شكوى</span>
+              <LuFileText /> إنشاء شكوى
             </h2>
             <p className="text-muted">
               يرجى تعبئة جميع الحقول المطلوبة لضمان سرعة معالجة الشكوى
             </p>
           </div>
 
-          <form action="" onSubmit={handleSubmit}>
-            <label htmlFor="name">الإسم الكريم</label>
-            <br />
-            <input
-              type="text"
-              placeholder="الإسم الكامل "
-              name="full_name"
-              value={formData.full_name}
-              onChange={handleChange}
+          <form onSubmit={handleSubmit}>
+            <div className="mb-3">
+              <label className="form-label">الإسم الكريم</label>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="الإسم الكامل"
+                name="full_name"
+                value={formData.full_name}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className={`mb-3 ${styles.phoneInputWrapper}`}>
+              <label className="form-label">
+                رقم الهاتف المحمول{" "}
+                <span className={styles.requiredStar}>*</span>
+              </label>
+              <PhoneInput
+                country="ps"
+                onlyCountries={["ps", "il"]}
+                preferredCountries={["ps", "il"]}
+                enableAreaCodes
+                value={formData.phone}
+                onChange={(phone) => setFormData({ ...formData, phone })}
+                inputProps={{
+                  name: "phone",
+                  required: true,
+                  autoFocus: true,
+                }}
+                containerStyle={{ direction: "ltr" }}
+                inputStyle={{ fontSize: "16px", height: "45px", width: "100%" }}
+              />
+              {PhoneError && (
+                <div className="text-danger mt-1">{PhoneError}</div>
+              )}
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">الإيميل</label>
+              <input
+                type="email"
+                className="form-control"
+                placeholder="Email إختياري"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">
+                رقم الهوية <span className={styles.requiredStar}>*</span>
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="رقم الهوية"
+                name="ID_number"
+                value={formData.ID_number}
+                onChange={handleChange}
+                required
+              />
+              {IDError && <div className="text-danger mt-1">{IDError}</div>}
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">
+                الجهة المعنية <span className={styles.requiredStar}>*</span>
+              </label>
+              <select
+                name="department_id"
+                className="form-select"
+                value={formData.department_id}
+                onChange={handleChange}
+                required
+              >
+                <option value="">-- اختر الجهة --</option>
+                <option value="1">دائرة الهندسية</option>
+                <option value="2">دائرة الشؤون الإدارية</option>
+                <option value="3">دائرة الصحة والبيئة</option>
+              </select>
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">
+                موضوع الشكوى <span className={styles.requiredStar}>*</span>
+              </label>
+              <input
+                type="text"
+                name="title"
+                className="form-control"
+                placeholder="موضوع الشكوى"
+                value={formData.title}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">
+                وصف الشكوى <span className={styles.requiredStar}>*</span>
+              </label>
+              <textarea
+                name="description"
+                rows={5}
+                className={`form-control ${styles.resizeBoth}`}
+                placeholder="وصف الشكوى"
+                value={formData.description}
+                onChange={handleChange}
+                required
+              ></textarea>
+              {messageError && (
+                <div className="text-danger mt-1">{messageError}</div>
+              )}
+            </div>
+
+            <div className="mb-3">
+              <label className="form-label">إدراج صورة</label>
+              <input
+                type="file"
+                accept="image/* ,video/*"
+                className="form-control"
+                name="files"
+                multiple
+                onChange={handleChange}
+              />
+              <small className="text-muted">يمكنك رفع الصور والفيديوهات</small>
+            </div>
+
+            <div className="text-center">
+              {/* <button type="submit" className={`px-5 ${styles.submitButton}`}>
+                إرسال
+              </button> */}
+
+              {isLoading ? (
+                <button className={`px-5 ${styles.submitButton}`} disabled>
+                  جاري الإرسال...
+                </button>
+              ) : (
+                <button type="submit" className={`px-5 ${styles.submitButton}`}>
+                  إرسال
+                </button>
+              )}
+            </div>
+
+            <SuccessModal
+              show={showModal}
+              onConfirm={handleConfirm}
+              onCancel={handleCancel}
             />
-
-            <br />
-
-            <label htmlFor="phone">
-              رقم الهاتف المحمول <span className={styles.requiredStar}>*</span>
-            </label>
-            <br />
-            {/* <input
-              type="text"
-              id="phone"
-              name="phone"
-              placeholder="Phone number"
-              value={formData.phone}
-              onChange={handleChange}
-            /> */}
-
-            <PhoneInput
-              className=""
-              value={formData.phone}
-              country="ps"
-              onlyCountries={["ps", "il"]}
-              preferredCountries={["ps", "il"]}
-              enableAreaCodes={true}
-              inputProps={{
-                name: "phone",
-                required: true,
-                autoFocus: true,
-              }}
-              onChange={(phone) => setFormData({ ...formData, phone })}
-              containerStyle={{
-                marginTop: "10px",
-                direction: "ltr",
-              }}
-              inputStyle={{
-                fontSize: "18px",
-                height: "50px",
-              }}
-            />
-            <span className={styles.requiredStar}>{PhoneError}</span>
-
-            <br />
-            <label htmlFor="">الايميل </label>
-            <br />
-            <input
-              type="email"
-              placeholder="Email إختياري"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-            />
-
-            <br />
-            <label>
-              {" "}
-              رقم الهوية
-              <span className={styles.requiredStar}>*</span>
-            </label>
-            <br />
-            <input
-              type="text"
-              required
-              placeholder="رقم الهوية"
-              name="ID_number"
-              value={formData.ID_number}
-              onChange={handleChange}
-            />
-            <br />
-            <span className={styles.requiredStar}>{IDError}</span>
-
-            <br />
-            <label>
-              الجهة المعنية
-              <span className={styles.requiredStar}>*</span>
-            </label>
-            <br />
-            <select
-              name="department_id"
-              required
-              value={formData.department_id}
-              onChange={handleChange}
-            >
-              <option value="">-- اختر الجهة --</option>
-              <option value="1">دائرة الهندسية</option>
-              <option value="2">دائرة الشؤون الإدارية</option>
-              <option value="3">دائرة الصحة والبيئة</option>
-            </select>
-            <br />
-            <label htmlFor="topic">
-              موضوع الشكوى
-              <span className={styles.requiredStar}>*</span>
-            </label>
-            <br />
-            <input
-              type="text"
-              name="title"
-              placeholder="موضوع الشكوى"
-              required
-              value={formData.title}
-              onChange={handleChange}
-            />
-            <br />
-
-            <label htmlFor="topic">
-              وصف الشكوى
-              <span className={styles.requiredStar}>*</span>
-            </label>
-            <br />
-            <textarea
-              name="description"
-              rows={8}
-              cols={55}
-              placeholder="وصف الشكوى"
-              className="resize-both"
-              value={formData.description}
-              onChange={handleChange}
-              required
-            ></textarea>
-
-            <span className={styles.requiredStar}>{messageError}</span>
-
-            <br />
-            <label htmlFor="file">إدراج صورة</label>
-            <br />
-            <input
-              type="file"
-              accept="image/* ,video/*"
-              id="file"
-              name="files"
-              multiple
-              onChange={handleChange}
-            />
-            <br />
-            <p className="text-sm text-muted mt-0">
-              يمكنك رفع الصور والفيديوهات
-            </p>
-            <button type="submit">إرسال</button>
           </form>
         </div>
       </div>
 
-      <div>
+      <div className="mt-4">
         <FooterPart />
       </div>
     </Fragment>

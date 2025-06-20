@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect } from "react";
 import { useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { useLocation } from 'react-router-dom';
+import { useLocation } from "react-router-dom";
 
 import HeaderEmployee from "./HeaderEmployee.jsx";
 import { useEmployee } from "../../utils/EmployeeContext.js";
@@ -9,112 +9,108 @@ import styles from "./EmployeePage.module.css";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+import ReturnComplaint from "../Model/ReturnComplaint.jsx";
 const EditComplaintEmployee = () => {
-  const { id } = useParams(); 
- 
-  const location   =useLocation();
+  const { id } = useParams();
+
+  const location = useLocation();
 
   const { employee } = useEmployee();
   const nevigate = useNavigate();
 
   const [infoComplaint, setInfoComplaint] = useState();
-  const [complaints , setComplaints] = useState([]);
-  
+  const [complaints, setComplaints] = useState([]);
 
   const [newStatus, setNewStatus] = useState("");
   const [Note, setNote] = useState();
-  
-  const userID = location.state?.employeeID
- //console.log("wwwqq", id ,"empID ", userID);
-     
 
-  
+  const [showModal, setShowModal] = useState(false);
+
+  const userID = location.state?.employeeID;
+  //console.log("wwwqq", id ,"empID ", userID);
+
   useEffect(() => {
+    const GetInfoComplaint = async () => {
+      try {
+        const res = await fetch(
+          `http://localhost:5000/api/admin/complaint/${id}`
+        );
+        const data = await res.json();
+        //  console.log("tttteee" ,data);
+        setInfoComplaint(data);
+        // setStatus(infoComplaint[0].status);
+      } catch (error) {
+        console.log("error", error);
+      }
+    };
 
-    const GetInfoComplaint = async() =>{
-        
-       try{
-       
-        const res = await fetch(`http://localhost:5000/api/admin/complaint/${id}`);
-        const data = await res.json(); 
-      //  console.log("tttteee" ,data);
-        setInfoComplaint(data)
-       // setStatus(infoComplaint[0].status);
-      
 
 
-       }catch(error){
-      console.log("error", error);
-       }
-
-    }   
-
+    
     const fetchComplaint = async () => {
       try {
         const res = await fetch(
           `http://localhost:5000/api/admin/incomingComplaints?type=employee&user_id=${userID}`
         );
         const data = await res.json();
-       
-       
 
         const selectedComplaint = data.find(
           (com) => com.complaint_id === Number(id)
-        ); 
-        
-        
-        setComplaints(selectedComplaint);
-      
+        );
 
-       // setStatus(data[0].status); 
-        
+        setComplaints(selectedComplaint);
+
+        // setStatus(data[0].status);
       } catch (error) {
         console.log("error", error);
       }
     };
     fetchComplaint();
-    GetInfoComplaint(); 
+    GetInfoComplaint();
   }, []);
 
+  const handleConfirm = async () => {
+    setShowModal(false);
+    handleSubmit(new Event("submit"));
+  };
 
-   
+  const handleCancel = () => {
+    setShowModal(false);
+    toast.info("لم يتم إرجاع الشكوى إلى الموظف");
+    return;
+  };
+
   const handleStatusChange = async (e) => {
-      const selectedStatus = e.target.value;
-      setNewStatus(selectedStatus);
-  
-      try {
-        const res = await fetch("http://localhost:5000/api/admin/updateStatus", {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            complaintId: infoComplaint[0].complaint_id,
-            status: selectedStatus,
-          }),
-        });
-      
-        if (res.ok) {
-          toast.success("تم تحديث حالة الشكوى بنجاح");
-        } else {
-          toast.error("فشل في تحديث الحالة");
-        }
-      } catch (error) {
-        console.error(error);
-        toast.error("حدث خطأ أثناء تحديث الحالة");
+    const selectedStatus = e.target.value;
+    setNewStatus(selectedStatus);
+
+    try {
+      const res = await fetch("http://localhost:5000/api/admin/updateStatus", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          complaintId: infoComplaint[0].complaint_id,
+          status: selectedStatus,
+        }),
+      });
+
+      if (res.ok) {
+        toast.success("تم تحديث حالة الشكوى بنجاح");
+      } else {
+        toast.error("فشل في تحديث الحالة");
       }
-    };
+    } catch (error) {
+      console.error(error);
+      toast.error("حدث خطأ أثناء تحديث الحالة");
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-
-    const confernReturn = window.confirm("هل متأكد من إرجاع الشكوى الى مسؤول النظام.");
     
-   if(!confernReturn){
-       return; 
-   }
-
     try {
       const token = localStorage.getItem("token");
 
@@ -134,18 +130,17 @@ const EditComplaintEmployee = () => {
           }),
         }
       );
-       
-     
+
       if (res.ok) {
         toast.success("تم إرجاع الشكوى الى مسؤول النظام");
         setNote("");
         // nevigate("/EmployeePage");
       } else {
-        toast.error("فشل في إرسال الشكوى الى مسؤول النظام");
+        toast.error("لا يمكن إعادة إرسال الشكوى مرة أخرى");
       }
     } catch (error) {
       console.log("error", error);
-      toast.error("حدث خطأ أثناء الإرسال ");
+      toast.error("حدث خطأ أثناء الإرسال !");
     }
   };
 
@@ -205,44 +200,34 @@ const EditComplaintEmployee = () => {
               {/* عرض الصورة */}
               {infoComplaint[0].image_path && (
                 <div className="mb-3">
-                  {/* <label className={styles.form_label}>
-                    تحميل الصور المرفقة
-                  </label> */}
-{/* http://localhost:5000/api/admin/view-image/${infoComplaint[0].image_path} */}
-{/* http://localhost:5000/api/admin/download-image/bfd08dd6eb4130e4069cf39495e1fcbf */}
-                  <div> 
-                  {console.log("image path", infoComplaint[0].image_path)}  
+                  <div>
+                    
                     <a
-                      href={`http://localhost:5000/api/admin/download-image/${infoComplaint[0].image_path}`} 
+                      href={`http://localhost:5000/api/admin/download-images/${id}`}
                       className="btn btn-primary"
                       rel="noopener noreferrer"
                       target="_blank"
                     >
-                      تنزيل صور الشكوى
+                      تنزيل ملفات الشكوى
                     </a>
                   </div>
                 </div>
               )}
 
-           
-              
               <div className="mb-3">
-            <label>حالة الشكوى</label>
-            <select
-              className="form-control"
-              value={newStatus}
-              onChange={(e) => handleStatusChange(e)}
-              disabled ={complaints.status === "return"}
-            >
-              <option value="" >
-                -تغيير الحالة-
-              </option>
-              {/* <option value="جديدة">جديدة</option> */}
-              <option value="قيد المعالجة">قيد المعالجة</option>
-              <option value="تم الحل">تم الحل</option>
-            </select>
-          </div>
-           
+                <label>حالة الشكوى</label>
+                <select
+                  className="form-control"
+                  value={newStatus}
+                  onChange={(e) => handleStatusChange(e)}
+                  disabled={complaints.status === "return"}
+                >
+                  <option value="">-تغيير الحالة-</option>
+                  {/* <option value="جديدة">جديدة</option> */}
+                  <option value="قيد المعالجة">قيد المعالجة</option>
+                  <option value="تم الحل">تم الحل</option>
+                </select>
+              </div>
 
               {/* الملاحظات */}
               <div className="mb-3">
@@ -254,13 +239,18 @@ const EditComplaintEmployee = () => {
                   placeholder="أضف ملاحظاتك هنا"
                   rows="3"
                   required
-                  disabled ={complaints.status === "return"}
+                  disabled={complaints.status === "return"}
                 />
               </div>
 
               {/* زر الإرسال */}
               <div className="text-center">
-                <button type="submit" className="btn btn-warning px-5">
+                <button
+                  type="button"
+                  className="btn btn-warning px-5"
+                  onClick={() => setShowModal(true)}
+                  disabled={complaints.status === "return"}
+                >
                   إرسال
                 </button>
 
@@ -275,11 +265,13 @@ const EditComplaintEmployee = () => {
             </form>
           )}
         </div>
-
-
-
-       
       </div>
+
+      <ReturnComplaint
+        show={showModal}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+      />
 
       <footer className="footer bg-white text-center py-3 border-top mt-5">
         <div className="container">

@@ -6,16 +6,24 @@ import styles from "./AdminDashboard.module.css";
 import { useAuth } from "../../utils/PrivateRoutes";
 import { useNavigate } from "react-router-dom";
 import HeaderAdmin from "./HeaderAdmin";
+
+import DeleteEmployeeModal from "../Model/DeleteEmployeeModal"
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const EmployeeManagement = () => {
   const navigate = useNavigate();
   const { user, logOut } = useAuth();
+   
+  const [showModal, setShowModal] = useState(false);
+  const [selectedEmployeeIndex, setSelectedEmployeeIndex] = useState(null);
+
 
   const [employees, setEmployees] = useState([]);
-  const [messageSuccess, setMessageSuccess] = useState("");
-  const [messageError, setMessageError] = useState("");
+  // const [messageSuccess, setMessageSuccess] = useState("");
+  // const [messageError, setMessageError] = useState(""); 
+
+ 
 
   const [form, setForm] = useState({
     fullName: "",
@@ -99,6 +107,44 @@ const EmployeeManagement = () => {
     }
   }
 
+  const handleConfirm =async () => {
+    
+    if (selectedEmployeeIndex === null) return;
+    
+
+    const employee = employees[selectedEmployeeIndex];
+
+   // console.log("Deleting employee:", employee);
+
+
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/employees/${employee.id}`,
+        { method: "DELETE" }
+      );
+
+      if (!res.ok) throw new Error("Failed to delete employee");
+      toast.warning(`تم حذف الموظف ${employee.FullName}`);
+      fetchEmployees();
+    } catch (error) {
+      console.error("Delete Error:", error);
+
+      toast.info("فشل حذف الموظف ");
+    }
+   setShowModal(false)
+  };
+
+  const handleCancel = () => {
+    setShowModal(false);
+    toast.info("لم يتم حذف الموظف ");
+    return;
+  };
+
+
+
+
+
+
   const handleSubmit = (e) => {
     e.preventDefault();
     addOrUpdateEmployee();
@@ -129,27 +175,13 @@ const EmployeeManagement = () => {
     setEditIndex(index);
   };
 
-  const handleDelete = async (index) => {
-    const employee = employees[index];
-    const confirmDelete = window.confirm(
-      "هل أنت متأكد أنك تريد حذف هذا الموظف؟"
-    );
-    if (!confirmDelete) return;
+  const handleDelete = async (index) => { 
 
-    try {
-      const res = await fetch(
-        `http://localhost:5000/api/employees/${employee.id}`,
-        { method: "DELETE" }
-      );
+    setSelectedEmployeeIndex(index);
+    setShowModal(true); 
 
-      if (!res.ok) throw new Error("Failed to delete employee");
-      toast.warning(`تم حذف الموظف ${employee.FullName}`);
-      fetchEmployees();
-    } catch (error) {
-      console.error("Delete Error:", error);
 
-      toast.info("فشل حذف الموظف ");
-    }
+  
   };
 
   const departments = [
@@ -267,6 +299,8 @@ const EmployeeManagement = () => {
                 <button type="submit" className="btn btn-success">
                   إضافة الموظف
                 </button>
+           
+
               ) : (
                 <>
                   <button type="submit" className="btn btn-primary">
@@ -294,19 +328,6 @@ const EmployeeManagement = () => {
             </div>
           </form>
 
-          {messageSuccess && (
-            <div
-              className=" alert alert-success  text-center fs-4"
-              role="alert"
-            >
-              {messageSuccess}
-            </div>
-          )}
-          {messageError && (
-            <div className=" alert alert-warning text-center fs-4" role="alert">
-              {messageError}
-            </div>
-          )}
 
           <h5>قائمة الموظفين</h5>
           <table className="table table-bordered text-center">
@@ -342,10 +363,18 @@ const EmployeeManagement = () => {
                       onClick={() => handleDelete(index)}
                     >
                       حذف
-                    </button>
+                    </button> 
+                   
                   </td>
                 </tr>
-              ))}
+              ))} 
+
+                    <DeleteEmployeeModal
+                       show={showModal}
+                        onConfirm={handleConfirm}
+                       onCancel={handleCancel}
+                      />
+             
               {employees.length === 0 && (
                 <tr>
                   <td colSpan="7">لا يوجد موظفين حالياً</td>
@@ -353,6 +382,7 @@ const EmployeeManagement = () => {
               )}
             </tbody>
           </table>
+         
         </div>
       </div>
 

@@ -231,6 +231,44 @@ const EditComplaint = () => {
       toast.error("حدث خطأ أثناء التنفيذ.يرجى المحاولة لاحقا");
     }
   };
+ 
+  console.log("complaint", id);
+  const handelChangeDepartment = async (e) => {
+       const selectedDepartment = e.target.value;
+       setSelectedDept(selectedDepartment);
+
+       try{
+  
+        const res = await fetch(`http://localhost:5000/api/admin/${id}/change-department`,
+          {
+            method:"PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+            newDepartmentId:Number(selectedDepartment),
+             adminId:1
+           
+          }),
+        });
+
+         
+        if(res.ok){
+      
+        toast.success("تم تغيير القسم بنجاح");
+        }else{
+          toast.error("فشل في تغيير القسم");
+        }
+
+
+
+       } catch (error) {
+          console.error("Error changing department:", error);
+          toast.error("حدث خطأ أثناء تغيير الدائرة");
+       }
+  }
+
+
 
   const handleStatusChange = async (e) => {
     const selectedStatus = e.target.value;
@@ -350,10 +388,11 @@ const EditComplaint = () => {
             <select
               className="form-control"
               value={selectedDept}
-              onChange={(e) => setSelectedDept(e.target.value)}
+              onChange={handelChangeDepartment}
             >
               {departments.map((d) => (
                 <option key={d.id} value={d.id}>
+                
                   {d.name}
                 </option>
               ))}
@@ -391,16 +430,17 @@ const EditComplaint = () => {
               <option value="مغلقة">مغلقة</option>
             </select>
           </div>
-
+          
+          
           {complaint.image_path && (
             <div className="mb-3">
               <a
-                //http://localhost:5000/api/admin/view-image/
-                href={`http://localhost:5000/api/admin/view-image/${complaint.image_path}`}
+               
+                href={`http://localhost:5000/api/admin/download-images/${id}`}
                 rel="noopener noreferrer"
                 className="btn btn-outline-secondary"
               >
-                عرض الصورة الشكوى
+                تنزيل ملفات الشكوى
               </a>
             </div>
           )}
