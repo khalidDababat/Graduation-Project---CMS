@@ -1,7 +1,10 @@
 
- .conteaner{
+
+
+ /* .conteaner{
     direction: ltr;
-    margin: 5px 100px ;
+    margin: 5px 100px ; 
+   
  }
 
 .header_submint{
@@ -12,32 +15,44 @@
     position: relative; 
     box-shadow: 0px 7px 16px -1px #60946e;
 
+}  */
+.requiredStar{
+    color: red;
+    margin-right: 5px;
 }
-/* .logo{
-   
-    display: inline;
-
-} */
-.logo_header{
-     
-    width: 100px; 
-    height: 80px; 
-
-    margin: auto 10px;
-    position: absolute;
-    right: 60px;
-    top: 15%;
-
-}
-
-/* .links_Citezen a {
-  padding: 10px; 
-  color:  black;
-  font-size: 20px ;
-  font-weight: bold; 
+ 
+.containerWrapper {
+    max-width: 750px;
+    margin: auto;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
   
-  text-decoration: none;
-} */
+  .title_page {
+    text-align: center;
+    margin-bottom: 25px;
+  }
+  
+  .requiredStar {
+    color: red;
+    font-weight: bold;
+  }
+  
+  .complaint_Content {
+    direction: rtl;
+  }
+  
+  .resizeBoth {
+    resize: both;
+  }
+  
+
+
+
+
+
  
 
 .prev_Complint{
@@ -109,6 +124,7 @@ form  >  input{
 }
 input,label{
     margin-bottom: 5px;
+    font-weight: bold;
 }
 
 form  > select{
@@ -123,8 +139,7 @@ form >  label{
     font-size: 19px; 
     font-weight: bold; 
     margin-left: 10px;  
-    /* display: inline;
-    float: right; */
+
 
 } 
 form >textarea{
@@ -154,16 +169,36 @@ form >textarea{
 
 form > button{
     padding: 10px; 
-    width: 270px;
+   
     height: 50px;
+    width: 100%;;
     
     font-weight: bold;
     font-size: 18px;
-    background-color: #60946e; 
+    background-color: #60946e !important; 
     border: none; 
     outline: none; 
     border-radius: 30px;
     cursor: pointer;
+}
+.submitButton{
+  padding: 10px; 
+   
+  height: 50px;
+  width: 100%;;
+  
+  font-weight: bold;
+  font-size: 18px;
+  background-color: #60946e !important; 
+  border: none; 
+  outline: none; 
+  border-radius: 30px;
+  cursor: pointer;
+} 
+.submitButton:hover{
+   background-color: #52656E;
+   transition: 0.9s; 
+   margin-top: 5px;
 }
 
 form > button:hover{
@@ -173,39 +208,11 @@ form > button:hover{
 } 
  
 
-
-
-/* .footer{
-    background-color: #181818;
-    height: 250px; 
-    position: relative;
-} 
-
-.copyright_area{
-    position:absolute;
-    
+form > label{
+    margin-top: 5px;
 }
 
-.footer_item{
-    
-    width: 330px;
-    height: 180px; 
-    padding: 10px;
-    margin: 5px;
-    background-color: #60946E; 
-    position: absolute; 
-    right: 70px;
-    margin-bottom: 10px;
-    
-}
 
-.copyright_area{ 
-    width: 99%; 
-    padding: 10px;
-    background-color: #202020; 
-    bottom: 0px;
+.phoneInputWrapper{
+  width: 300px;
 }
-
-.social_icons a{
-   padding: 10px; 
-} */
